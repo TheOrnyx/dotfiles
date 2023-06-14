@@ -1,0 +1,42 @@
+XTerm.termName: xterm-256color
+XTerm*faceName: Cozette:pixelsize=12
+XTerm*geometry: 140x40
+xterm*VT100.Translations: #override \
+                 Ctrl Shift <Key>V:    insert-selection(CLIPBOARD) \n\
+                 Ctrl Shift <Key>C:    copy-selection(CLIPBOARD)
+! special
+XTerm*.foreground:   #d6deeb
+XTerm*background:   #011627
+XTerm*cursorColor:  #d6deeb
+
+! black
+XTerm*color0:       #011627
+XTerm*color8:       #575656
+
+! red
+XTerm*color1:       #ef5350
+XTerm*color9:       #ef5350
+
+! green
+XTerm*color2:       #22da6e
+XTerm*color10:      #22da6e
+
+! yellow
+XTerm*color3:       #addb67
+XTerm*color11:      #ffeb95
+
+! blue
+XTerm*color4:       #82aaff
+XTerm*color12:      #82aaff
+
+! magenta
+XTerm*color5:       #c792ea
+XTerm*color13:      #c792ea
+
+! cyan
+XTerm*color6:       #21c7a8
+XTerm*color14:      #7fdbca
+
+! white
+XTerm*color7:       #ffffff
+XTerm*color15:      #ffffff
