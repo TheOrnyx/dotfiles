@@ -21,8 +21,10 @@
 ;; probably fix my stupid ocitcon thing
 ;; Maybe fix some of the free variable errors etc lmao
 ;; probably make my own theme tbh, this one's nice but customize yass
+;; check out HELM
 
 ;;;Code:
+(setq inferior-lisp-program "sbcl") ;;set the common lisp to SBCL
 
 ;;Git gutter stuff
 (use-package git-gutter
@@ -36,6 +38,21 @@
   (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
   (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 
+;;pdf-tools
+(use-package pdf-tools
+  :config
+  (pdf-tools-install))
+
+;;Common lisp
+
+;;Uncomment this if stop using sly
+;;(use-package slime
+;;  :config
+;;  (setq inferior-lisp-program "sbcl")
+;;  (add-to-list 'auto-mode-alist '("\\.lisp\\'" . slime-mode))
+;;  (setq slime-contribs '(slime-fancy)))
+
+(use-package sly)
 
 ;;beacon mode
 (use-package beacon
@@ -211,6 +228,19 @@
 (yas-reload-all)
 (add-hook 'prog-mode-hook #'yas-minor-mode)
 
+(use-package company
+  :config
+  (add-hook 'after-init-hook 'global-company-mode))
+
+
+;;Fix this if I ever decide to stop using sly
+;;(use-package slime-company
+;;  :after (slime company)
+;;  :config
+;;  (setq slime-company-completion 'fuzzy
+;;        slime-company-after-completion 'slime-company-just-one-space)
+;;  (push 'company-slime company-backends))
+
 ;;(use-package lsp-ivy)
 
 ;;(defun efs/lsp-mode-setup ()	       
@@ -228,8 +258,8 @@
  ; (company-minimum-prefix-length 1)
  ; (company-idle-delay 0.0))
 
-(use-package company-box
-  :hook (company-mode . company-box-mode))
+;(use-package company-box
+;  :hook (company-mode . company-box-mode))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
