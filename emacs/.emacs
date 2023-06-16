@@ -1,21 +1,49 @@
 ;;TODO
 ;;
-;; set up maximize window or smth
 ;; make thing look better and disable scroll bar etc
 ;; git
-;; set keybinds https://github.com/nixin72/block-nav.el
+;; set keybinds https://github.com/nixin72/k-nav.el
 ;; maybe check out hydra
 ;; maybe check out MEOW
 ;; Poss fix minibuffer height if that becomes a problem
 ;; possibly switch to init.el
 ;; probably reorganize
 ;; maybe install persp mode
-;; fix full screen
 ;; make some better comments
-;; possibly configure some of the autocomplete kinda stuff
+;; possibly configure some of the autocomplete kinda stuff - kinda done but can probs be fixed, delay is kidna fucked sometimes
 ;; remove some of the commented out chunks that aren't and won't be needed
 ;; convert this to init.el poss and git that shit
 ;; convert some of the regular require package to use-package
+;; set up workspace stuff
+;; probably sort the packages and stuff into config, packages etc
+;; check out pulsar - maybe a replacement for beacon
+;; check out ace popup menu
+;; probably fix my stupid ocitcon thing
+;; Maybe fix some of the free variable errors etc lmao
+;; probably make my own theme tbh, this one's nice but customize yass
+
+;;;Code:
+
+;;Git gutter stuff
+(use-package git-gutter
+  :hook (prog-mode . git-gutter-mode)
+  :config
+  (setq git-gutter:update-interval 0.02))
+
+(use-package git-gutter-fringe
+  :config
+  (define-fringe-bitmap 'git-gutter-fr:added [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
+  (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
+
+
+;;beacon mode
+(use-package beacon
+  :config
+  (beacon-mode 1)
+  (setq beacon-size 40)
+  (setq beacon-blink-duration 1))
+
 
 ;; Screen size on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -26,7 +54,6 @@
 
 ;;Hopefully improvements to autocomplete and stuff
 (setq read-process-output-max (* 1024 1024)) ;; 1mb
-(setq company-dabbrev-downcase 0)
 
 ;;basic settings
 (scroll-bar-mode -1)
@@ -226,27 +253,38 @@
 (require 'sublimity-scroll)
 (sublimity-mode 1)
 
+
+(use-package octicons)
+(use-package nerd-icons)
+
+
 ;;dashboard stuff
 (use-package dashboard
-  :ensure t
   :config
+  (setq dashboard-center-content t)
+  (setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
+  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
+  ;;(setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
+  ;;(setq dashboard-set-heading-icons t)
+  ;;(setq dashboard-set-file-icons t)
+  ;;(setq dashboard-set-navigator t)
+  ;; (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))) ;For if I ever use the Daemon
   (dashboard-setup-startup-hook))
-(setq dashboard-center-content t)
 
 (use-package centaur-tabs
   :ensure t
   :demand
   :config
   (centaur-tabs-mode t)
+  (centaur-tabs-headline-match)
+  (setq centaur-tabs-style "slant")
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-set-bar 'under)
+  (setq x-underline-at-descent-line t)
+  (setq centaur-tabs-cycle-scope 'tabs)
   :bind
   ("C-<iso-lefttab>" . centaur-tabs-backward)
   ("C-<tab>" . centaur-tabs-forward))
-(centaur-tabs-headline-match)
-(setq centaur-tabs-style "slant")
-(setq centaur-tabs-set-icons t)
-(setq centaur-tabs-set-bar 'under)
-(setq x-underline-at-descent-line t)
-(setq centaur-tabs-cycle-scope 'tabs)
 
 (straight-use-package
  '(block-nav :type git :host github :repo "nixin72/block-nav.el")
