@@ -22,9 +22,69 @@
 ;; Maybe fix some of the free variable errors etc lmao
 ;; probably make my own theme tbh, this one's nice but customize yass
 ;; check out HELM
+;; probably tweak my comments to use proper conventions
+;; ADD THE SNIPPET FOLDER TO THE GITHUB!!!!
+;; Probably add some stuff for markdown and org mode
+;; also learn org mode dickhead
 
-;;;Code:
+;;;; NOTES ABOUT THE COMMENT CONVENTIONS
+;-----------------------------------------------
+; ;Single semicolons (;) should be used (format "message" format-args)or inline comments.
+; ;Double semicolons (;;) should be used for line comments.
+; ;Triple semicolons (;;;) should be used for "comments that should be considered a heading by Outline minor mode"
+; ;Quadruple semicolons (;;;;) should be used for headings of major sections of a program.
+;----------------------------------------------
+
+;;;Sly stuff
+(use-package sly)
+
+;;; Projectile
+(use-package projectile
+  :init
+  (projectile-mode 1)
+  :bind (:map projectile-mode-map
+	      ("s-p" . projectile-command-map)
+	      ("C-c p" . projectile-command-map)))
+
+(use-package treemacs-projectile
+  :after projectile)
+
+;;; Random unsorted stuff
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+;;;Ivy
+(use-package ivy
+  :config
+  (ivy-mode 1)
+  (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+  (setq ivy-height 20)) ;probs tweak a bit
+
+(use-package ivy-rich
+  :after (ivy counsel)
+  :init
+  (ivy-rich-mode 1))
+
+(use-package all-the-icons-ivy
+  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+
+(use-package counsel
+  :after (ivy)
+  :config
+  (counsel-mode 1))
+
+;;;;Code:
 (setq inferior-lisp-program "sbcl") ;;set the common lisp to SBCL
+(tool-bar-mode -1) ;; remove the tool bar
+(setq undo-limit 240000) ;; Change the undo limit to 240000 bytes - might need tweaking
+;(global-set-key (kbd "C-c M-x") 'execute-extended-command)
+(global-set-key (kbd "C-c C-s") 'sly)
+;; Extra sections that's not required
+(add-to-list 'load-path "~/.emacs.d/extra/tracker-mode/") ;;probs remove, was for funny joke
+(delete-selection-mode 1)
+
+;;;; Visuals
+
 
 ;;Git gutter stuff
 (use-package git-gutter
@@ -51,8 +111,6 @@
 ;;  (setq inferior-lisp-program "sbcl")
 ;;  (add-to-list 'auto-mode-alist '("\\.lisp\\'" . slime-mode))
 ;;  (setq slime-contribs '(slime-fancy)))
-
-(use-package sly)
 
 ;;beacon mode
 (use-package beacon
@@ -110,40 +168,7 @@
   :bind (:map projectile-mode-map
 	      ("C-c p" . projectile-command-map)));;poss configure idk
 
-;;treemacs
-(use-package treemacs
-  :ensure t
-  :defer t
-  :init
-  (with-eval-after-load 'winum
-    (define-key winum-keymap (kbd "M-0") #'treemacs-select-window))
-  :config
-  (treemacs-follow-mode t)
-  (treemacs-filewatch-mode t)
-  (treemacs-fringe-indicator-mode 'always)
-  (when treemacs-python-executable
-    (treemacs-git-commit-diff-mode t))
-  :bind
-  (:map global-map
-        ("M-0"       . treemacs-select-window)
-        ("C-x t 1"   . treemacs-delete-other-windows)
-        ("C-x t t"   . treemacs)
-        ("C-x t d"   . treemacs-select-directory)
-        ("C-x t B"   . treemacs-bookmark)
-        ("C-x t C-t" . treemacs-find-file)
-        ("C-x t M-t" . treemacs-find-tag)))
-
-(use-package treemacs-projectile
-  :after (treemacs projectile)
-  :ensure t)
-
-(use-package treemacs-icons-dired
-  :hook (dired-mode . treemacs-icons-dired-enable-once)
-  :ensure t)
-
-(use-package treemacs-magit
-  :after (treemacs magit)
-  :ensure t)
+;;treemacs used to be here, it's dead now
 
 ;;Uncomment if I ever use persp mode
 ;(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
@@ -163,10 +188,8 @@
 (use-package which-key
   :config
   (which-key-mode)
-  (which-key-setup-side-window-bottom))
-  ;(which-key-setup-minibuffer)
-  ;(setq which-key-popup-type 'minibuffer))
-;;possibly expand this
+  (which-key-setup-side-window-bottom)
+  (setq which-key-idle-delay 0.2))
 
 ;;LSP STUFF
 (use-package lsp-mode
@@ -194,7 +217,7 @@
   :commands lsp-ui-mode
  ;; :hook (lsp-mode . lsp-ui-mode)
   :config
-  (setq lsp-ui-doc-enable nil)
+  (setq lsp-ui-doc-enable t)
   (setq lsp-ui-doc-header t)
   (setq lsp-ui-doc-include-signature t)
   (setq lsp-ui-doc-border (face-foreground 'default))
@@ -213,8 +236,9 @@
 
 (add-hook 'lsp-mode-hook 'lsp-ui-mode)
 
+;;; Flycheck stuff
 (use-package flycheck
-  :init (global-flycheck-mode)
+  :init (add-hook 'after-init-hook #'global-flycheck-mode)
   :config
   (setq flycheck-check-syntax-automatically '(save mode-enabled))
   (setq flycheck-display-errors-delay 0.2))
@@ -230,36 +254,9 @@
 
 (use-package company
   :config
-  (add-hook 'after-init-hook 'global-company-mode))
-
-
-;;Fix this if I ever decide to stop using sly
-;;(use-package slime-company
-;;  :after (slime company)
-;;  :config
-;;  (setq slime-company-completion 'fuzzy
-;;        slime-company-after-completion 'slime-company-just-one-space)
-;;  (push 'company-slime company-backends))
-
-;;(use-package lsp-ivy)
-
-;;(defun efs/lsp-mode-setup ()	       
-;;  (setq lsp-headerline-breadcrumb-segments '(path-up-to-project file symbols))
-;;  (lsp-headerline-breadcrumb-mode))
-
-;; (use-package company
-;;   :after lsp-mode
-;;   :hook (prog-mode . company-mode)
-;;   :bind (:map company-active-map
-;;          ("<tab>" . company-complete-selection))
-;;         (:map lsp-mode-map
-;;          ("<tab>" . company-indent-or-complete-common)))
- ; :custom
- ; (company-minimum-prefix-length 1)
- ; (company-idle-delay 0.0))
-
-;(use-package company-box
-;  :hook (company-mode . company-box-mode))
+  (add-hook 'after-init-hook 'global-company-mode)
+  (setq company-minimum-prefix-length 1)
+  (setq company-idle-delay 0.0)) ;;probably tweak these
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -316,17 +313,6 @@
   ("C-<iso-lefttab>" . centaur-tabs-backward)
   ("C-<tab>" . centaur-tabs-forward))
 
-(straight-use-package
- '(block-nav :type git :host github :repo "nixin72/block-nav.el")
- :config
- (progn
-   (setf block-nav-move-skip-shallower t
-        block-nav-center-after-scroll t)))
-
-;;(straight-use-package 'helm)
-
 (winner-mode 1)
 
 (load-theme 'catppuccin t)
-
-
