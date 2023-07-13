@@ -38,6 +38,53 @@
 ;;;Sly stuff
 (use-package sly)
 
+;;; Dired stuff
+(use-package dired-single)
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+(use-package dirvish
+  :config (dirvish-override-dired-mode))
+
+;;; Processing
+(use-package processing-mode
+  :config
+  (setq processing-location "~/processing-4.2/processing-java")
+  (setq processing-application-dir "~/processing-4.2/processing")
+  (setq processing-sketchbook-dir "~/sketchbook")
+  (add-hook 'processing-mode-hook 'company-mode 'company-box-mode)
+  (add-hook 'processing-mode-hook 'glasses-mode)
+  (add-hook 'processing-mode-hook #'lsp-deferred))
+
+(with-eval-after-load 'lsp-mode
+  (add-to-list 'lsp-language-id-configuration
+	       '(processing-mode . "processing"))
+  (lsp-register-client
+   (make-lsp-client :new-connection (lsp-stdio-connection "/usr/share/processing/processing-lsp")
+		    :activation-fn (lsp-activate-on "processing")
+		    :server-id 'processing)))
+
+;;;Org mode stuff
+(use-package org-view-mode)
+(use-package org-modern
+  :config
+  (add-hook 'org-mode-hook #'org-modern-mode)
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
+(use-package org-download
+  :config (add-hook 'dired-mode-hook 'org-download-enable)
+  (setq-default org-download-image-dir "~/Pictures/foo"))
+
+(use-package org-roam
+  :init
+  (setq org-roam-v2-ack t)
+  :custom
+  (org-roam-directory "~/RoamNotes")
+  :bind (("C-c n l" . org-roam-buffer-toggle)
+         ("C-c n f" . org-roam-node-find)
+         ("C-c n i" . org-roam-node-insert))
+  :config
+  (org-roam-setup))
+
 ;;; Projectile
 (use-package projectile
   :init
@@ -82,6 +129,8 @@
 ;; Extra sections that's not required
 (add-to-list 'load-path "~/.emacs.d/extra/tracker-mode/") ;;probs remove, was for funny joke
 (delete-selection-mode 1)
+(setq org-support-shift-select t)
+(setq org-image-actual-width 400)
 
 ;;;; Visuals
 
@@ -182,8 +231,7 @@
 ;  :ensure t
 ;  :config (treemacs-set-scope-type 'Tabs))
 
-(use-package all-the-icons
-  :if (display-graphic-p))
+(use-package all-the-icons)
 
 (use-package which-key
   :config
@@ -213,6 +261,7 @@
   (with-eval-after-load 'lsp-mode
     (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
 
+
 (use-package lsp-ui
   :commands lsp-ui-mode
  ;; :hook (lsp-mode . lsp-ui-mode)
@@ -238,10 +287,8 @@
 
 ;;; Flycheck stuff
 (use-package flycheck
-  :init (add-hook 'after-init-hook #'global-flycheck-mode)
-  :config
-  (setq flycheck-check-syntax-automatically '(save mode-enabled))
-  (setq flycheck-display-errors-delay 0.2))
+  :init (add-hook 'after-init-hook #'global-flycheck-mode))
+  
 ;; (setq lsp-message-project-root-warning t)
 ;; (setq lsp-message-project-root-error t)
 
@@ -258,6 +305,10 @@
   (setq company-minimum-prefix-length 1)
   (setq company-idle-delay 0.0)) ;;probably tweak these
 
+(use-package company-box
+  :hook (company-mode . company-box-mode)
+  :config (setq company-box-icons-alist 'company-box-icons-all-the-icons))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -266,8 +317,11 @@
  '(custom-enabled-themes nil)
  '(custom-safe-themes
    '("ec101eeff0195d92c3dc0c1c60edb1a84fa2adbbe8fdfea2a423aa95d1edc4d7" default))
+ '(global-display-line-numbers-mode t)
  '(package-selected-packages
-   '(minimap centaur-tabs projectile page-break-lines use-package dashboard sublimity catppuccin-theme ##)))
+   '(minimap centaur-tabs projectile page-break-lines use-package dashboard sublimity catppuccin-theme ##))
+ '(size-indication-mode t)
+ '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

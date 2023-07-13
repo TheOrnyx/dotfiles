@@ -7,3 +7,4 @@ function fish_greeting
     six
 
 end
+fish_add_path /home/ornyx/.spicetify
