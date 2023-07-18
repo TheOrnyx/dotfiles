@@ -38,6 +38,10 @@
 ;;;Sly stuff
 (use-package sly)
 
+
+;;Put icicles shit here
+(use-package yuck-mode)
+
 ;;; Dired stuff
 (use-package dired-single)
 (use-package all-the-icons-dired
@@ -63,6 +67,40 @@
    (make-lsp-client :new-connection (lsp-stdio-connection "/usr/share/processing/processing-lsp")
 		    :activation-fn (lsp-activate-on "processing")
 		    :server-id 'processing)))
+
+;;;Helpful
+(use-package helpful
+  :config
+  ;; Note that the built-in `describe-function' includes both functions
+  ;; and macros. `helpful-function' is functions only, so we provide
+  ;; `helpful-callable' as a drop-in replacement.
+  (global-set-key (kbd "C-h f") #'helpful-callable)
+  (global-set-key (kbd "C-h v") #'helpful-variable)
+  (global-set-key (kbd "C-h k") #'helpful-key)
+  (global-set-key (kbd "C-h x") #'helpful-command)
+  ;; Lookup the current symbol at point. C-c C-d is a common keybinding
+  ;; for this in lisp modes.
+  (global-set-key (kbd "C-c C-d") #'helpful-at-point)
+
+  ;; Look up *F*unctions (excludes macros).
+  ;;
+  ;; By default, C-h F is bound to `Info-goto-emacs-command-node'. Helpful
+  ;; already links to the manual, if a function is referenced there.
+  (global-set-key (kbd "C-h F") #'helpful-function)
+
+  (setq counsel-describe-function-function #'helpful-callable)
+  (setq counsel-describe-variable-function #'helpful-variable))
+
+;;;Volatile Highlights
+(use-package volatile-highlights
+  :config (volatile-highlights-mode t))
+
+;;;Mode line - probably replace or try others
+(use-package smart-mode-line)
+
+;;;ctrlF
+(use-package ctrlf
+  :config (ctrlf-mode +1))
 
 ;;;Org mode stuff
 (use-package org-view-mode)
@@ -261,6 +299,19 @@
   (with-eval-after-load 'lsp-mode
     (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
 
+(use-package haskell-mode)
+(use-package lsp-haskell
+  :config
+  (add-hook 'haskell-mode-hook #'lsp)
+  (add-hook 'haskell-literate-mode-hook #'lsp))
+
+(use-package yaml-mode
+  :config
+  (add-hook 'yaml-mode-hook
+	    (lambda ()
+	      (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+  (add-hook 'yaml-mode-hook #'lsp))
+(use-package indent-tools)
 
 (use-package lsp-ui
   :commands lsp-ui-mode
@@ -318,9 +369,10 @@
  '(custom-safe-themes
    '("ec101eeff0195d92c3dc0c1c60edb1a84fa2adbbe8fdfea2a423aa95d1edc4d7" default))
  '(global-display-line-numbers-mode t)
+ '(inhibit-startup-screen t)
  '(package-selected-packages
    '(minimap centaur-tabs projectile page-break-lines use-package dashboard sublimity catppuccin-theme ##))
- '(size-indication-mode t)
+ '(size-ication-mode t)
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -332,7 +384,16 @@
 
 (require 'sublimity)
 (require 'sublimity-scroll)
+;(require 'sublimity-map)
 (sublimity-mode 1)
+;; (setq sublimity-map-size 20)
+;; (setq sublimity-map-fraction 0.3)
+;; (setq sublimity-map-text-scale -7)
+;; (setq sublimity-map-set-delay 20)
+;; (add-hook 'sublimity-map-setup-hook
+;;           (lambda ()
+;;             (setq buffer-face-mode-face '(:family "Monospace"))
+;;             (buffer-face-mode)))
 
 
 (use-package octicons)
