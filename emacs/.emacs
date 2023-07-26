@@ -26,6 +26,7 @@
 ;; ADD THE SNIPPET FOLDER TO THE GITHUB!!!!
 ;; Probably add some stuff for markdown and org mode
 ;; also learn org mode dickhead
+;; ELECTRIC MODE PARENTHESIS BLAHHHH
 
 ;;;; NOTES ABOUT THE COMMENT CONVENTIONS
 ;-----------------------------------------------
@@ -38,6 +39,8 @@
 ;;;Sly stuff
 (use-package sly)
 
+(use-package color-identifiers-mode
+  :config (add-hook 'after-init-hook 'global-color-identifiers-mode))
 
 ;;Put icicles shit here
 (use-package yuck-mode)
@@ -95,8 +98,21 @@
 (use-package volatile-highlights
   :config (volatile-highlights-mode t))
 
-;;;Mode line - probably replace or try others
-(use-package smart-mode-line)
+;; (use-package  smart-mode-line-atom-one-dark-theme)
+;; ;;;Mode line - probably replace or try others
+;; (use-package smart-mode-line
+;;   :config
+;;   (setq sml/theme 'atom-one-dark)
+;;   (sml/setup))
+
+;;Powerline
+;; (use-package powerline
+;;   :config
+;;   (powerline-default-theme))
+
+;;Doom mode line
+(use-package doom-modeline
+  :init (doom-modeline-mode 1))
 
 ;;;ctrlF
 (use-package ctrlf
@@ -159,6 +175,7 @@
   (counsel-mode 1))
 
 ;;;;Code:
+(global-set-key (kbd "M-i") 'imenu)
 (setq inferior-lisp-program "sbcl") ;;set the common lisp to SBCL
 (tool-bar-mode -1) ;; remove the tool bar
 (setq undo-limit 240000) ;; Change the undo limit to 240000 bytes - might need tweaking
@@ -277,6 +294,18 @@
   (which-key-setup-side-window-bottom)
   (setq which-key-idle-delay 0.2))
 
+;;;clipboard
+(use-package clipetty
+  :ensure t
+  :hook (after-init . global-clipetty-mode))
+
+;;;devdocs
+(use-package devdocs
+  :config (global-set-key (kbd "C-h z") 'devdocs-lookup))
+
+;;;prism
+(use-package prism)
+
 ;;LSP STUFF
 (use-package lsp-mode
   :commands lsp
@@ -289,15 +318,28 @@
     c-mode
     ) . lsp-deferred)
   :config
-  (setq lsp-prefer-flymake nil)
-  (setq lsp-log-io nil)
-  (setq gc-cons-threshold 100000000) ;;maybe edit this to try out some stuff
+  ;; (setq lsp-prefer-flymake nil)
+  ;; (setq lsp-log-io nil)
+  ;; (setq gc-cons-threshold 100000000) ;;maybe edit this to try out some stuff
   (setq lsp-ruby-stdio-command '("solargraph" "stdio")
 	lsp-solargraph-library-directories '("~/.local/share/gem"))
-  (lsp-enable-which-key-integration t))
+  (lsp-enable-which-key-integration t)
+  (lsp-headerline-breadcrumb-mode))
+
+(use-package quickrun
+  :bind ("C-c r" . quickrun))
+
+(use-package lsp-java
+  :config (add-hook 'java-mode-hook #'lsp))
   
   (with-eval-after-load 'lsp-mode
     (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+
+(use-package lsp-ivy)
+
+(use-package web-mode)
+
+(use-package iedit)
 
 (use-package haskell-mode)
 (use-package lsp-haskell
@@ -322,6 +364,7 @@
   (setq lsp-ui-doc-include-signature t)
   (setq lsp-ui-doc-border (face-foreground 'default))
   (setq lsp-ui-sideline-show-code-actions t)
+  (setq lsp-ui-sideline-show-diagnostics t)
   (setq lsp-ui-sideline-delay 0.05))
  ; (setq lsp-ui-doc-position 'bottom)
  ; (setq lsp-ui-sideline-enable nil)
@@ -356,18 +399,24 @@
   (setq company-minimum-prefix-length 1)
   (setq company-idle-delay 0.0)) ;;probably tweak these
 
+(use-package company-quickhelp
+  :config (company-quickhelp-mode)
+  (setq company-quickhelp-delay 0))
+
 (use-package company-box
   :hook (company-mode . company-box-mode)
-  :config (setq company-box-icons-alist 'company-box-icons-all-the-icons))
+  :config (setq company-box-icons-alist 'company-box-icons-all-the-icons)
+  (setq company-tooltip-minimum-width 60)
+  (setq company-tooltip-minimum 10))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(custom-enabled-themes nil)
+ '(custom-enabled-themes '(dracula))
  '(custom-safe-themes
-   '("ec101eeff0195d92c3dc0c1c60edb1a84fa2adbbe8fdfea2a423aa95d1edc4d7" default))
+   '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "288482f5c627c1fe5a1d26fcc17ec6ca8837f36bf940db809895bf3f8e2e4edd" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "ec101eeff0195d92c3dc0c1c60edb1a84fa2adbbe8fdfea2a423aa95d1edc4d7" default))
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
  '(package-selected-packages
@@ -428,6 +477,21 @@
   ("C-<iso-lefttab>" . centaur-tabs-backward)
   ("C-<tab>" . centaur-tabs-forward))
 
+(use-package smartparens
+  :init (require 'smartparens-config)
+  :config (add-hook 'prog-mode-hook #'smartparens-mode))
+
+(use-package undo-tree
+  :config (global-undo-tree-mode))
+
 (winner-mode 1)
 
-(load-theme 'catppuccin t)
+(use-package dracula-theme
+  :init (load-theme 'dracula t))
+
+;; (use-package catppuccin-theme
+;;   :config
+;;   (setq catppuccin-flavor 'macchiato)
+;;   (load-theme 'catppuccin t))
+
+(put 'narrow-to-region 'disabled nil)
