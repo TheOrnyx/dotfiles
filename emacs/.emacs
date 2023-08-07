@@ -4,7 +4,6 @@
 ;; git
 ;; set keybinds https://github.com/nixin72/k-nav.el
 ;; maybe check out hydra
-;; maybe check out MEOW
 ;; Poss fix minibuffer height if that becomes a problem
 ;; possibly switch to init.el
 ;; probably reorganize
@@ -27,6 +26,12 @@
 ;; Probably add some stuff for markdown and org mode
 ;; also learn org mode dickhead
 ;; ELECTRIC MODE PARENTHESIS BLAHHHH
+;; check out apheleia
+;; FIX STUPID INDENTATION
+;; Probably fix soemthing with stupid electric indentation in java mode fucking stuff up
+;; Write silly script to delete whitespace when killing etc
+;; fix prism, it was kidna nice till it shit hard
+;; Possibly fix some of the problems with company-quickhelp doc being too long
 
 ;;;; NOTES ABOUT THE COMMENT CONVENTIONS
 ;-----------------------------------------------
@@ -35,6 +40,57 @@
 ; ;Triple semicolons (;;;) should be used for "comments that should be considered a heading by Outline minor mode"
 ; ;Quadruple semicolons (;;;;) should be used for headings of major sections of a program.
 ;----------------------------------------------
+
+;;;Treesitter
+(setq treesit-language-source-alist
+      '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+	(java "https://github.com/tree-sitter/tree-sitter-java")
+	(commonlisp "https://github.com/theHamsta/tree-sitter-commonlisp")
+	(clojure "https://github.com/sogaiu/tree-sitter-clojure")
+	(cpp "https://github.com/tree-sitter/tree-sitter-cpp")
+	(glsl "https://github.com/theHamsta/tree-sitter-glsl")
+	(haskell "https://github.com/tree-sitter/tree-sitter-haskell")
+	(ruby "https://github.com/tree-sitter/tree-sitter-ruby")
+	(cmake "https://github.com/uyha/tree-sitter-cmake")
+	(css "https://github.com/tree-sitter/tree-sitter-css")
+	(elisp "https://github.com/Wilfred/tree-sitter-elisp")
+	(go "https://github.com/tree-sitter/tree-sitter-go")
+	(html "https://github.com/tree-sitter/tree-sitter-html")
+	(javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+	(json "https://github.com/tree-sitter/tree-sitter-json")
+	(make "https://github.com/alemuller/tree-sitter-make")
+	(markdown "https://github.com/ikatyang/tree-sitter-markdown")
+	(python "https://github.com/tree-sitter/tree-sitter-python")
+	(toml "https://github.com/tree-sitter/tree-sitter-toml")
+	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
+;;;Stuff I stole from some dudes github
+(use-package prescient
+  :config
+  (setq prescient-filter-method '(literal regexp initialism fuzzy))
+  (setq prescient-sort-length-enable nil)
+  (prescient-persist-mode +1))
+
+(use-package ivy-prescient
+  :after (prescient ivy counsel)
+  :config
+  (setq ivy-prescient-sort-commands
+        '(:not swiper
+               counsel-grep
+               counsel-rg
+               counsel-projectile-rg
+               ivy-switch-buffer
+               counsel-switch-buffer))
+  (setq ivy-prescient-retain-classic-highlighting t)
+  (ivy-prescient-mode +1))
+
+(use-package company-prescient
+  :after (prescient company)
+  :config
+  (company-prescient-mode +1))
+
 
 ;;;Sly stuff
 (use-package sly)
@@ -59,17 +115,21 @@
   (setq processing-location "~/processing-4.2/processing-java")
   (setq processing-application-dir "~/processing-4.2/processing")
   (setq processing-sketchbook-dir "~/sketchbook")
-  (add-hook 'processing-mode-hook 'company-mode 'company-box-mode)
-  (add-hook 'processing-mode-hook 'glasses-mode)
-  (add-hook 'processing-mode-hook #'lsp-deferred))
+  (add-hook 'processing-mode-hook 'company-mode 'company-box-mode))
+;;  (add-hook 'processing-mode-hook 'glasses-mode))
 
-(with-eval-after-load 'lsp-mode
-  (add-to-list 'lsp-language-id-configuration
-	       '(processing-mode . "processing"))
-  (lsp-register-client
-   (make-lsp-client :new-connection (lsp-stdio-connection "/usr/share/processing/processing-lsp")
-		    :activation-fn (lsp-activate-on "processing")
-		    :server-id 'processing)))
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+	       '(processing-mode . ("/usr/share/processing/processing-lsp" "--stdio"))))
+;;(add-hook 'processing-mode-hook #'lsp-deferred))
+
+;; (with-eval-after-load 'lsp-mode
+;;   (add-to-list 'lsp-language-id-configuration
+;; 	       '(processing-mode . "processing"))
+;;   (lsp-register-client
+;;    (make-lsp-client :new-connection (lsp-stdio-connection "/usr/share/processing/processing-lsp")
+;; 		    :activation-fn (lsp-activate-on "processing")
+;; 		    :server-id 'processing)))
 
 ;;;Helpful
 (use-package helpful
@@ -141,18 +201,26 @@
 
 ;;; Projectile
 (use-package projectile
-  :init
-  (projectile-mode 1)
-  :bind (:map projectile-mode-map
-	      ("s-p" . projectile-command-map)
-	      ("C-c p" . projectile-command-map)))
+  :config
+  (setq projectile-sort-order 'recentf)
+  (setq projectile-indexing-method 'hybrid)
+  (setq projectile-completion-system 'ivy)
+  (setq projectile-mode-line-prefix " ")
+  (projectile-mode +1))
 
-(use-package treemacs-projectile
-  :after projectile)
+(use-package counsel-projectile
+  :config
+  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
+  (counsel-projectile-mode +1))
+
+;; (use-package treemacs-projectile
+;;   :after projectile)
 
 ;;; Random unsorted stuff
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
+
+
 
 ;;;Ivy
 (use-package ivy
@@ -175,15 +243,18 @@
   (counsel-mode 1))
 
 ;;;;Code:
-(global-set-key (kbd "M-i") 'imenu)
-(setq inferior-lisp-program "sbcl") ;;set the common lisp to SBCL
-(tool-bar-mode -1) ;; remove the tool bar
-(setq undo-limit 240000) ;; Change the undo limit to 240000 bytes - might need tweaking
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+(global-set-key (kbd "C-M-z") 'zap-to-char)
+(setq next-line-add-newlines t)
+(setq gc-cons-threshold 1600000)
+(global-set-key (kbd "M-i") 'imenu)				;;Binding for imenu
+(setq inferior-lisp-program "sbcl")				;;set the common lisp to SBCL
+(tool-bar-mode -1)						;; remove the tool bar
+(setq undo-limit 240000)					;; Change the undo limit to 240000 bytes - might need tweaking
 ;(global-set-key (kbd "C-c M-x") 'execute-extended-command)
 (global-set-key (kbd "C-c C-s") 'sly)
-;; Extra sections that's not required
-(add-to-list 'load-path "~/.emacs.d/extra/tracker-mode/") ;;probs remove, was for funny joke
-(delete-selection-mode 1)
+;(add-to-list 'load-path "~/.emacs.d/extra/tracker-mode/")	;;probs remove, was for funny joke
+;(delete-selection-mode 0)
 (setq org-support-shift-select t)
 (setq org-image-actual-width 400)
 
@@ -222,7 +293,6 @@
   (beacon-mode 1)
   (setq beacon-size 40)
   (setq beacon-blink-duration 1))
-
 
 ;; Screen size on startup
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
@@ -304,40 +374,76 @@
   :config (global-set-key (kbd "C-h z") 'devdocs-lookup))
 
 ;;;prism
-(use-package prism)
+;;(use-package prism)
 
-;;LSP STUFF
-(use-package lsp-mode
-  :commands lsp
-  :init
-  (setq lsp-keymap-prefix "C-c l")
-  :hook
-  ((ruby-mode
-    c++-mode
-    java-mode
-    c-mode
-    ) . lsp-deferred)
-  :config
-  ;; (setq lsp-prefer-flymake nil)
-  ;; (setq lsp-log-io nil)
-  ;; (setq gc-cons-threshold 100000000) ;;maybe edit this to try out some stuff
-  (setq lsp-ruby-stdio-command '("solargraph" "stdio")
-	lsp-solargraph-library-directories '("~/.local/share/gem"))
-  (lsp-enable-which-key-integration t)
-  (lsp-headerline-breadcrumb-mode))
+;;;Eglot
+(use-package eglot-java)
+
+(add-hook 'java-mode-hook 'eglot-ensure)
+(add-hook 'c++-mode-hook 'eglot-ensure)
+(add-hook 'processing-mode 'eglot-ensure)
+
+;; ;;LSP STUFF
+;; (use-package lsp-mode
+;;   :commands lsp
+;;   :init
+;;   (setq lsp-keymap-prefix "C-c l")
+;;   :hook
+;;   ((ruby-mode
+;;     ;c++-mode
+;;     ;java-mode
+;;     ;c-mode
+;;     html-mode) . lsp-deferred)
+;;   :config
+;;   ;; (setq lsp-prefer-flymake nil)
+;;   ;; (setq lsp-log-io nil)
+;;   ;; (setq gc-cons-threshold 100000000) ;;maybe edit this to try out some stuff
+;;   (setq lsp-ruby-stdio-command '("solargraph" "stdio")
+;; 	lsp-solargraph-library-directories '("~/.local/share/gem"))
+;;   (lsp-enable-which-key-integration t)
+;;   (lsp-headerline-breadcrumb-mode))
+
+;; ;; (use-package lsp-java
+;; ;;   :config (add-hook 'java-mode-hook #'lsp))
+  
+;; (with-eval-after-load 'lsp-mode
+;;   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+
+;; (use-package lsp-ivy)
 
 (use-package quickrun
   :bind ("C-c r" . quickrun))
 
-(use-package lsp-java
-  :config (add-hook 'java-mode-hook #'lsp))
-  
-  (with-eval-after-load 'lsp-mode
-    (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
+;;;Web dev stuff
+(use-package web-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
+  (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode)))
+(defun my-web-mode-hook ()
+  "Hooks for web-mode"
+  (setq web-mode-markup-indent-offset 2)
+  (setq web-mode-css-indent-offset 2)
+  (setq web-mode-code-indent-offset 2))
+(add-hook 'web-mode-hook 'my-web-mode-hook)
+(add-hook 'html-mode-hook #'lsp)
+(add-hook 'web-mode-hook #'lsp)
 
-(use-package lsp-ivy)
 
-(use-package web-mode)
+(use-package prettier-js
+  :config
+  (add-hook 'js2-mode-hook 'prettier-js-mode)
+  (add-hook 'web-mode-hook 'prettier-js-mode))
+
+(use-package impatient-mode)
+(use-package skewer-mode)
+(use-package php-mode)
+(use-package js2-mode)
+(use-package emmet-mode)
+(use-package rainbow-mode)
+
+(add-hook 'web-mode-hook #'emmet-mode)
 
 (use-package iedit)
 
@@ -355,6 +461,8 @@
   (add-hook 'yaml-mode-hook #'lsp))
 (use-package indent-tools)
 
+
+
 (use-package lsp-ui
   :commands lsp-ui-mode
  ;; :hook (lsp-mode . lsp-ui-mode)
@@ -370,12 +478,12 @@
  ; (setq lsp-ui-sideline-enable nil)
  ; (setq lsp-ui-sideline-show-hover nil)
 
-(use-package lsp-java
-  :after lsp
-  :config (add-hook 'java-mode-hook 'lsp))
+;; (use-package lsp-java
+;;   :after lsp
+;;   :config (add-hook 'java-mode-hook 'lsp))
 
-(use-package lsp-treemacs
-  :after lsp)
+;; (use-package lsp-treemacs
+;;   :after lsp)
 
 (add-hook 'lsp-mode-hook 'lsp-ui-mode)
 
@@ -421,6 +529,7 @@
  '(inhibit-startup-screen t)
  '(package-selected-packages
    '(minimap centaur-tabs projectile page-break-lines use-package dashboard sublimity catppuccin-theme ##))
+ '(scalable-fonts-allowed t)
  '(size-ication-mode t)
  '(tool-bar-mode nil))
 (custom-set-faces
@@ -455,6 +564,13 @@
   (setq dashboard-center-content t)
   (setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
   (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
+  (setq dashboard-projects-backend 'projectile)
+  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+  (setq dashboard-items '((recents . 5)
+	                  (projects . 5)	                  
+	                  (bookmarks . 5)
+			  (registers . 5)
+			  (agenda . 5)))
   ;;(setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
   ;;(setq dashboard-set-heading-icons t)
   ;;(setq dashboard-set-file-icons t)
@@ -473,6 +589,7 @@
   (setq centaur-tabs-set-bar 'under)
   (setq x-underline-at-descent-line t)
   (setq centaur-tabs-cycle-scope 'tabs)
+  (setq centaur-tabs-group-by-projectile-project 1)
   :bind
   ("C-<iso-lefttab>" . centaur-tabs-backward)
   ("C-<tab>" . centaur-tabs-forward))
@@ -482,7 +599,8 @@
   :config (add-hook 'prog-mode-hook #'smartparens-mode))
 
 (use-package undo-tree
-  :config (global-undo-tree-mode))
+  :config (global-undo-tree-mode)
+  (setq undo-tree-auto-save-history t))
 
 (winner-mode 1)
 
