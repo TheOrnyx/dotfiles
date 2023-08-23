@@ -32,6 +32,7 @@
 ;; Write silly script to delete whitespace when killing etc
 ;; fix prism, it was kidna nice till it shit hard
 ;; Possibly fix some of the problems with company-quickhelp doc being too long
+;; maybe actually add smth for transparency in the config (set-frame-parameter) or whatever
 
 ;;;; NOTES ABOUT THE COMMENT CONVENTIONS
 ;-----------------------------------------------
@@ -66,6 +67,9 @@
 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
+;;;CSHARP
+;;(use-package omnisharp)
+
 ;;;Stuff I stole from some dudes github
 (use-package prescient
   :config
@@ -92,6 +96,7 @@
   (company-prescient-mode +1))
 
 
+
 ;;;Sly stuff
 (use-package sly)
 
@@ -112,15 +117,15 @@
 ;;; Processing
 (use-package processing-mode
   :config
-  (setq processing-location "~/processing-4.2/processing-java")
-  (setq processing-application-dir "~/processing-4.2/processing")
+  (setq processing-location "~/processing-4.3/processing-java")
+  (setq processing-application-dir "~/processing-4.3/processing")
   (setq processing-sketchbook-dir "~/sketchbook")
   (add-hook 'processing-mode-hook 'company-mode 'company-box-mode))
 ;;  (add-hook 'processing-mode-hook 'glasses-mode))
 
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-	       '(processing-mode . ("/usr/share/processing/processing-lsp" "--stdio"))))
+	       '(processing-mode . ("~/processing-4.3/processing-lsp" "--stdio"))))
 ;;(add-hook 'processing-mode-hook #'lsp-deferred))
 
 ;; (with-eval-after-load 'lsp-mode
@@ -243,6 +248,38 @@
   (counsel-mode 1))
 
 ;;;;Code:
+(setq save-interprogram-paste-before-kill t)
+(setq pixel-scroll-precision-large-scroll-height 40.0)
+(setq fortune-dir "/usr/share/fortune")
+(setq fortune-file "/usr/share/fortune/wisdom")
+
+(defun kill-buffer-path ()
+  "Copy the current buffer path"
+  (interactive)
+  (kill-new (buffer-file-name)))
+
+(set-frame-parameter nil 'alpha-background 95)
+(set-frame-parameter nil 'cursor-color "coral")
+(setq display-battery-mode 1)
+(setq calendar-week-start-day 1)
+(use-package csv-mode)
+
+(display-time-mode 1)
+
+(use-package format-all)
+(use-package ialign)
+(global-set-key (kbd "C-c l") #'ialign)
+
+(use-package sr-speedbar)
+(setq sr-speedbar-right-side nil)
+(global-set-key (kbd "C-c t") 'sr-speedbar-toggle)
+
+(setq zone-when-idle 120)
+(add-to-list 'load-path "~/.emacs.d/extra/nethack_el")
+(add-to-list 'load-path "~/.emacs.d/extra/")
+(require 'tron)
+(autoload 'mine-sweeper "mine-sweeper" nil t)
+;;(require 'mine-sweeper)
 (global-set-key (kbd "M-z") 'zap-up-to-char)
 (global-set-key (kbd "C-M-z") 'zap-to-char)
 (setq next-line-add-newlines t)
@@ -260,6 +297,12 @@
 
 ;;;; Visuals
 
+
+;;;Clojure
+(use-package cider)
+(add-hook 'clojure-mode-hook 'eglot-ensure)
+(use-package paredit)
+(add-hook 'clojure-mode-hook 'paredit-mode-hook)
 
 ;;Git gutter stuff
 (use-package git-gutter
@@ -379,7 +422,8 @@
 ;;;Eglot
 (use-package eglot-java)
 
-(add-hook 'java-mode-hook 'eglot-ensure)
+;(add-hook 'java-mode-hook 'eglot-ensure)
+(add-hook 'java-mode-hook 'eglot-java-mode)
 (add-hook 'c++-mode-hook 'eglot-ensure)
 (add-hook 'processing-mode 'eglot-ensure)
 
@@ -427,8 +471,8 @@
   (setq web-mode-css-indent-offset 2)
   (setq web-mode-code-indent-offset 2))
 (add-hook 'web-mode-hook 'my-web-mode-hook)
-(add-hook 'html-mode-hook #'lsp)
-(add-hook 'web-mode-hook #'lsp)
+;;(add-hook 'html-mode-hook #'lsp)
+;;(add-hook 'web-mode-hook #'lsp)
 
 
 (use-package prettier-js
@@ -448,44 +492,44 @@
 (use-package iedit)
 
 (use-package haskell-mode)
-(use-package lsp-haskell
-  :config
-  (add-hook 'haskell-mode-hook #'lsp)
-  (add-hook 'haskell-literate-mode-hook #'lsp))
+;; (use-package lsp-haskell
+;;   :config
+;;   (add-hook 'haskell-mode-hook #'lsp)
+;;   (add-hook 'haskell-literate-mode-hook #'lsp))
 
-(use-package yaml-mode
-  :config
-  (add-hook 'yaml-mode-hook
-	    (lambda ()
-	      (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-  (add-hook 'yaml-mode-hook #'lsp))
+;; (use-package yaml-mode
+;;   :config
+;;   (add-hook 'yaml-mode-hook
+;; 	    (lambda ()
+;; 	      (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
+;;   (add-hook 'yaml-mode-hook #'lsp))
 (use-package indent-tools)
 
 
 
-(use-package lsp-ui
-  :commands lsp-ui-mode
- ;; :hook (lsp-mode . lsp-ui-mode)
-  :config
-  (setq lsp-ui-doc-enable t)
-  (setq lsp-ui-doc-header t)
-  (setq lsp-ui-doc-include-signature t)
-  (setq lsp-ui-doc-border (face-foreground 'default))
-  (setq lsp-ui-sideline-show-code-actions t)
-  (setq lsp-ui-sideline-show-diagnostics t)
-  (setq lsp-ui-sideline-delay 0.05))
- ; (setq lsp-ui-doc-position 'bottom)
- ; (setq lsp-ui-sideline-enable nil)
- ; (setq lsp-ui-sideline-show-hover nil)
+;; (use-package lsp-ui
+;;   :commands lsp-ui-mode
+;;  ;; :hook (lsp-mode . lsp-ui-mode)
+;;   :config
+;;   (setq lsp-ui-doc-enable t)
+;;   (setq lsp-ui-doc-header t)
+;;   (setq lsp-ui-doc-include-signature t)
+;;   (setq lsp-ui-doc-border (face-foreground 'default))
+;;   (setq lsp-ui-sideline-show-code-actions t)
+;;   (setq lsp-ui-sideline-show-diagnostics t)
+;;   (setq lsp-ui-sideline-delay 0.05))
+;;  ; (setq lsp-ui-doc-position 'bottom)
+;;  ; (setq lsp-ui-sideline-enable nil)
+;;  ; (setq lsp-ui-sideline-show-hover nil)
 
-;; (use-package lsp-java
-;;   :after lsp
-;;   :config (add-hook 'java-mode-hook 'lsp))
+;; ;; (use-package lsp-java
+;; ;;   :after lsp
+;; ;;   :config (add-hook 'java-mode-hook 'lsp))
 
-;; (use-package lsp-treemacs
-;;   :after lsp)
+;; ;; (use-package lsp-treemacs
+;; ;;   :after lsp)
 
-(add-hook 'lsp-mode-hook 'lsp-ui-mode)
+;; (add-hook 'lsp-mode-hook 'lsp-ui-mode)
 
 ;;; Flycheck stuff
 (use-package flycheck
@@ -494,7 +538,7 @@
 ;; (setq lsp-message-project-root-warning t)
 ;; (setq lsp-message-project-root-error t)
 
-(global-set-key (kbd "C-c C-d") 'lsp-describe-thing-at-point)
+;; (global-set-key (kbd "C-c C-d") 'lsp-describe-thing-at-point)
 
 (use-package yasnippet)
 (use-package yasnippet-snippets)
@@ -522,6 +566,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(company-box-scrollbar nil)
  '(custom-enabled-themes '(dracula))
  '(custom-safe-themes
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "288482f5c627c1fe5a1d26fcc17ec6ca8837f36bf940db809895bf3f8e2e4edd" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "ec101eeff0195d92c3dc0c1c60edb1a84fa2adbbe8fdfea2a423aa95d1edc4d7" default))
