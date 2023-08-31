@@ -177,7 +177,11 @@
 
 ;;Doom mode line
 (use-package doom-modeline
-  :init (doom-modeline-mode 1))
+  :init (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-support-imenu t)
+  (setq doom-modeline-battery t))
+  
 
 ;;;ctrlF
 (use-package ctrlf
@@ -248,13 +252,18 @@
   (counsel-mode 1))
 
 ;;;;Code:
+(setq confirm-kill-emacs #'yes-or-no-p)
+(setq shell-file-name "/bin/sh") ;; Fixes ripgrep issues
+
+(setq epg-gpg-program "gpg2")
+(setq auth-sources '("~/.authinfo.gpg"))
 (setq save-interprogram-paste-before-kill t)
 (setq pixel-scroll-precision-large-scroll-height 40.0)
 (setq fortune-dir "/usr/share/fortune")
 (setq fortune-file "/usr/share/fortune/wisdom")
 
 (defun kill-buffer-path ()
-  "Copy the current buffer path"
+  "Copy the current buffer path."
   (interactive)
   (kill-new (buffer-file-name)))
 
@@ -294,7 +303,6 @@
 ;(delete-selection-mode 0)
 (setq org-support-shift-select t)
 (setq org-image-actual-width 400)
-
 ;;;; Visuals
 
 
@@ -570,6 +578,21 @@
  '(custom-enabled-themes '(dracula))
  '(custom-safe-themes
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "288482f5c627c1fe5a1d26fcc17ec6ca8837f36bf940db809895bf3f8e2e4edd" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "ec101eeff0195d92c3dc0c1c60edb1a84fa2adbbe8fdfea2a423aa95d1edc4d7" default))
+ '(forge-alist
+   '(("github.com" "api.github.com" "github.com" forge-github-repository)
+     ("gitlab.com" "gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository)
+     ("salsa.debian.org" "salsa.debian.org/api/v4" "salsa.debian.org" forge-gitlab-repository)
+     ("framagit.org" "framagit.org/api/v4" "framagit.org" forge-gitlab-repository)
+     ("gitlab.gnome.org" "gitlab.gnome.org/api/v4" "gitlab.gnome.org" forge-gitlab-repository)
+     ("codeberg.org" "codeberg.org/api/v1" "codeberg.org" forge-gitea-repository)
+     ("code.orgmode.org" "code.orgmode.org/api/v1" "code.orgmode.org" forge-gogs-repository)
+     ("bitbucket.org" "api.bitbucket.org/2.0" "bitbucket.org" forge-bitbucket-repository)
+     ("git.savannah.gnu.org" nil "git.savannah.gnu.org" forge-cgit**-repository)
+     ("git.kernel.org" nil "git.kernel.org" forge-cgit-repository)
+     ("repo.or.cz" nil "repo.or.cz" forge-repoorcz-repository)
+     ("git.suckless.org" nil "git.suckless.org" forge-stagit-repository)
+     ("git.sr.ht" nil "git.sr.ht" forge-srht-repository)
+     ("gitlab.ecs.vuw.ac.nz" "gitlab.ecs.vuw.ac.nz/api/v4" "gitlab.ecs.vuw.ac.nz" forge-gitlab-repository)))
  '(global-display-line-numbers-mode t)
  '(inhibit-startup-screen t)
  '(package-selected-packages
