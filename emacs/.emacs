@@ -4,6 +4,7 @@
 ;; git
 ;; set keybinds https://github.com/nixin72/k-nav.el
 ;; maybe check out hydra
+;; maybe check out MEOW
 ;; Poss fix minibuffer height if that becomes a problem
 ;; possibly switch to init.el
 ;; probably reorganize
@@ -26,13 +27,8 @@
 ;; Probably add some stuff for markdown and org mode
 ;; also learn org mode dickhead
 ;; ELECTRIC MODE PARENTHESIS BLAHHHH
-;; check out apheleia
-;; FIX STUPID INDENTATION
-;; Probably fix soemthing with stupid electric indentation in java mode fucking stuff up
-;; Write silly script to delete whitespace when killing etc
-;; fix prism, it was kidna nice till it shit hard
-;; Possibly fix some of the problems with company-quickhelp doc being too long
-;; maybe actually add smth for transparency in the config (set-frame-parameter) or whatever
+
+;;Probably check out tabbar mode
 
 ;;;; NOTES ABOUT THE COMMENT CONVENTIONS
 ;-----------------------------------------------
@@ -41,6 +37,47 @@
 ; ;Triple semicolons (;;;) should be used for "comments that should be considered a heading by Outline minor mode"
 ; ;Quadruple semicolons (;;;;) should be used for headings of major sections of a program.
 ;----------------------------------------------
+
+;;;;;;;;;;;;;;;;;;;
+;; Package Setup ;;
+;;;;;;;;;;;;;;;;;;;
+
+;Setup melpa
+(require 'package)
+(add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
+(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(package-initialize)
+
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(eval-and-compile
+  (setq use-package-always-ensure t
+        use-package-expand-minimally t))
+(require 'use-package)
+
+;;use package stuff
+;; (unless (package-installed-p 'use-package)
+;;   (package-refresh-contents)
+;;   (package-install 'use-package))
+;; (eval-and-compile
+;;   (setq use-package-always-ensure t
+;;         use-package-expand-minimally t))
+
+;; ;Straight
+;; (defvar bootstrap-version)
+;; (let ((bootstrap-file
+;;        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+;;       (bootstrap-version 6))
+;;   (unless (file-exists-p bootstrap-file)
+;;     (with-current-buffer
+;;         (url-retrieve-synchronously
+;;          "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
+;;          'silent 'inhibit-cookies)
+;;       (goto-char (point-max))
+;;       (eval-print-last-sexp)))
+;;   (load bootstrap-file nil 'nomessage))
+;---------------------------------------------------------
 
 ;;;Treesitter
 (setq treesit-language-source-alist
@@ -67,127 +104,129 @@
 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
-;;;CSHARP
-;;(use-package omnisharp)
 
-;;;Stuff I stole from some dudes github
-(use-package prescient
-  :config
-  (setq prescient-filter-method '(literal regexp initialism fuzzy))
-  (setq prescient-sort-length-enable nil)
-  (prescient-persist-mode +1))
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;  Controllers for different sections ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defvar *using-eglot* t) ;using eglot
+(defvar *lsp-mode-enabled* nil) ;using lsp-mode
+(defvar *using-ivy* nil) ;using ivy
+(defvar *using-company* nil)
+(defvar *using-corfu* t)
+(defvar *using-vertico* t)
+(defvar *using-projectile* t)
+(defvar *using-project.el* nil)
 
-(use-package ivy-prescient
-  :after (prescient ivy counsel)
-  :config
-  (setq ivy-prescient-sort-commands
-        '(:not swiper
-               counsel-grep
-               counsel-rg
-               counsel-projectile-rg
-               ivy-switch-buffer
-               counsel-switch-buffer))
-  (setq ivy-prescient-retain-classic-highlighting t)
-  (ivy-prescient-mode +1))
+;---------------------------------------------------------
 
-(use-package company-prescient
-  :after (prescient company)
-  :config
-  (company-prescient-mode +1))
+;;;;;;;;;;;;;;;;;;;;;;;;
+;; Theme and UI stuff ;;
+;;;;;;;;;;;;;;;;;;;;;;;;
 
-
-
-;;;Sly stuff
-(use-package sly)
-
-(use-package color-identifiers-mode
-  :config (add-hook 'after-init-hook 'global-color-identifiers-mode))
-
-;;Put icicles shit here
-(use-package yuck-mode)
-
-;;; Dired stuff
-(use-package dired-single)
-(use-package all-the-icons-dired
-  :hook (dired-mode . all-the-icons-dired-mode))
-
-(use-package dirvish
-  :config (dirvish-override-dired-mode))
-
-;;; Processing
-(use-package processing-mode
-  :config
-  (setq processing-location "~/processing-4.3/processing-java")
-  (setq processing-application-dir "~/processing-4.3/processing")
-  (setq processing-sketchbook-dir "~/sketchbook")
-  (add-hook 'processing-mode-hook 'company-mode 'company-box-mode))
-;;  (add-hook 'processing-mode-hook 'glasses-mode))
-
-(with-eval-after-load 'eglot
-  (add-to-list 'eglot-server-programs
-	       '(processing-mode . ("~/processing-4.3/processing-lsp" "--stdio"))))
-;;(add-hook 'processing-mode-hook #'lsp-deferred))
-
-;; (with-eval-after-load 'lsp-mode
-;;   (add-to-list 'lsp-language-id-configuration
-;; 	       '(processing-mode . "processing"))
-;;   (lsp-register-client
-;;    (make-lsp-client :new-connection (lsp-stdio-connection "/usr/share/processing/processing-lsp")
-;; 		    :activation-fn (lsp-activate-on "processing")
-;; 		    :server-id 'processing)))
-
-;;;Helpful
-(use-package helpful
-  :config
-  ;; Note that the built-in `describe-function' includes both functions
-  ;; and macros. `helpful-function' is functions only, so we provide
-  ;; `helpful-callable' as a drop-in replacement.
-  (global-set-key (kbd "C-h f") #'helpful-callable)
-  (global-set-key (kbd "C-h v") #'helpful-variable)
-  (global-set-key (kbd "C-h k") #'helpful-key)
-  (global-set-key (kbd "C-h x") #'helpful-command)
-  ;; Lookup the current symbol at point. C-c C-d is a common keybinding
-  ;; for this in lisp modes.
-  (global-set-key (kbd "C-c C-d") #'helpful-at-point)
-
-  ;; Look up *F*unctions (excludes macros).
-  ;;
-  ;; By default, C-h F is bound to `Info-goto-emacs-command-node'. Helpful
-  ;; already links to the manual, if a function is referenced there.
-  (global-set-key (kbd "C-h F") #'helpful-function)
-
-  (setq counsel-describe-function-function #'helpful-callable)
-  (setq counsel-describe-variable-function #'helpful-variable))
-
-;;;Volatile Highlights
-(use-package volatile-highlights
-  :config (volatile-highlights-mode t))
-
-;; (use-package  smart-mode-line-atom-one-dark-theme)
-;; ;;;Mode line - probably replace or try others
-;; (use-package smart-mode-line
-;;   :config
-;;   (setq sml/theme 'atom-one-dark)
-;;   (sml/setup))
-
-;;Powerline
-;; (use-package powerline
-;;   :config
-;;   (powerline-default-theme))
-
-;;Doom mode line
+;Modeline
 (use-package doom-modeline
   :init (doom-modeline-mode 1)
   :config
   (setq doom-modeline-support-imenu t)
   (setq doom-modeline-battery t))
-  
 
-;;;ctrlF
-(use-package ctrlf
-  :config (ctrlf-mode +1))
+(use-package dashboard
+  :config
+  (setq dashboard-center-content t)
+  (setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
+  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
+  (setq dashboard-projects-backend 'projectile)
+  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+  (setq dashboard-items '((recents . 5)
+	                  (projects . 5)
+	                  (bookmarks . 5)
+			  (registers . 5)
+			  (agenda . 5)))
+  (dashboard-setup-startup-hook))
 
-;;;Org mode stuff
+(use-package dracula-theme)
+;---------------------------------------------------------
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Extra Code And Configurations ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(winner-mode 1)
+(setq confirm-kill-emacs #'yes-or-no-p) ;;Confirm exist
+(setq shell-file-name "/bin/sh") ;; Fixes ripgrep issues
+(setq epg-gpg-program "gpg2")
+(setq auth-sources '("~/.authinfo.gpg")) ;; Sets authinfo file to gpg one
+
+(setq save-interprogram-paste-before-kill t)
+(setq pixel-scroll-precision-large-scroll-height 40.0)
+
+(defun kill-buffer-path ()
+  "Copy the current buffer path."
+  (interactive)
+  (kill-new (buffer-file-name)))
+
+(set-frame-parameter nil 'alpha-background 95)
+(set-frame-parameter nil 'cursor-color "coral")
+(setq display-battery-mode 1)
+(setq calendar-week-start-day 1)
+(display-time-mode 1)
+(display-battery-mode 1)
+
+(setq zone-when-idle 120)
+(add-to-list 'load-path "~/.emacs.d/extra/")
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+(global-set-key (kbd "C-M-z") 'zap-to-char)
+(global-set-key (kbd "M-Z") 'zap-to-char)
+
+(setq next-line-add-newlines t)
+(setq gc-cons-threshold 1600000)
+(global-set-key (kbd "M-i") 'imenu)				;;Binding for imenu
+(setq inferior-lisp-program "sbcl")				;;set the common lisp to SBCL
+(tool-bar-mode -1)						;; remove the tool bar
+(setq undo-limit 240000)					;; Change the undo limit to 240000 bytes - might need tweaking
+
+(setq org-support-shift-select t)
+(setq org-image-actual-width 400)
+(setq gc-cons-threshold 50000000)
+(add-to-list 'initial-frame-alist '(fullscreen . maximized))    ;; Maximize on startup
+(setq initial-frame-alist default-frame-alist)
+;(setq read-process-output-max (* 1024 1024)) ;; reenable if problems
+;(setq gc-cons-threshold 1600000)
+
+(scroll-bar-mode -1)
+(global-display-line-numbers-mode 1)
+
+;---------------------------------------------------------
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Org Mode Configs and Packages ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; forge ;;
+(use-package forge
+  :config
+  (setq forge-alist '(("github.com" "api.github.com" "github.com" forge-github-repository)
+		      ("gitlab.com" "gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository)
+		      ("salsa.debian.org" "salsa.debian.org/api/v4" "salsa.debian.org" forge-gitlab-repository)
+		      ("framagit.org" "framagit.org/api/v4" "framagit.org" forge-gitlab-repository)
+		      ("gitlab.gnome.org" "gitlab.gnome.org/api/v4" "gitlab.gnome.org" forge-gitlab-repository)
+		      ("codeberg.org" "codeberg.org/api/v1" "codeberg.org" forge-gitea-repository)
+		      ("code.orgmode.org" "code.orgmode.org/api/v1" "code.orgmode.org" forge-gogs-repository)
+		      ("bitbucket.org" "api.bitbucket.org/2.0" "bitbucket.org" forge-bitbucket-repository)
+		      ("git.savannah.gnu.org" nil "git.savannah.gnu.org" forge-cgit**-repository)
+		      ("git.kernel.org" nil "git.kernel.org" forge-cgit-repository)
+		      ("repo.or.cz" nil "repo.or.cz" forge-repoorcz-repository)
+		      ("git.suckless.org" nil "git.suckless.org" forge-stagit-repository)
+		      ("git.sr.ht" nil "git.sr.ht" forge-srht-repository)
+		      ("gitlab.ecs.vuw.ac.nz" "gitlab.ecs.vuw.ac.nz/api/v4" "gitlab.ecs.vuw.ac.nz" forge-gitlab-repository))))
+
+(use-package smartparens
+  :init (require 'smartparens-config)
+  :config (add-hook 'prog-mode-hook #'smartparens-mode))
+
+(use-package undo-tree
+  :config (global-undo-tree-mode)
+  (setq undo-tree-auto-save-history t))
+
 (use-package org-view-mode)
 (use-package org-modern
   :config
@@ -208,115 +247,42 @@
   :config
   (org-roam-setup))
 
-;;; Projectile
-(use-package projectile
-  :config
-  (setq projectile-sort-order 'recentf)
-  (setq projectile-indexing-method 'hybrid)
-  (setq projectile-completion-system 'ivy)
-  (setq projectile-mode-line-prefix " ")
-  (projectile-mode +1))
+;---------------------------------------------------------
+;;;;;;;;;;;;;;;;;;;;;
+;; Project Configs ;;
+;;;;;;;;;;;;;;;;;;;;;
 
-(use-package counsel-projectile
-  :config
-  (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)
-  (counsel-projectile-mode +1))
-
-;; (use-package treemacs-projectile
-;;   :after projectile)
-
-;;; Random unsorted stuff
-(use-package rainbow-delimiters
-  :hook (prog-mode . rainbow-delimiters-mode))
+;; Projectile ;;
+(when *using-projectile*
+  (use-package projectile
+    :init
+    (projectile-mode +1)
+    :bind (:map projectile-mode-map
+		("C-c p" . projectile-command-map))
+    :config
+    (setq projectile-sort-order 'recentf)
+    (setq projectile-indexing-method 'hybrid)
+    (setq projectile-completion-system 'default)
+    (setq projectile-mode-line-prefix " ")
+    (projectile-mode +1)))
 
 
+;; Project.el ;;
+(when *using-project.el*)
 
-;;;Ivy
-(use-package ivy
-  :config
-  (ivy-mode 1)
-  (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-  (setq ivy-height 20)) ;probs tweak a bit
+;---------------------------------------------------------
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Extra Misc Packages ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(use-package ivy-rich
-  :after (ivy counsel)
-  :init
-  (ivy-rich-mode 1))
-
-(use-package all-the-icons-ivy
-  :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-
-(use-package counsel
-  :after (ivy)
-  :config
-  (counsel-mode 1))
-
-;;;;Code:
-(setq confirm-kill-emacs #'yes-or-no-p)
-(setq shell-file-name "/bin/sh") ;; Fixes ripgrep issues
-
-(setq epg-gpg-program "gpg2")
-(setq auth-sources '("~/.authinfo.gpg"))
-(setq save-interprogram-paste-before-kill t)
-(setq pixel-scroll-precision-large-scroll-height 40.0)
-(setq fortune-dir "/usr/share/fortune")
-(setq fortune-file "/usr/share/fortune/wisdom")
-
-(defun kill-buffer-path ()
-  "Copy the current buffer path."
-  (interactive)
-  (kill-new (buffer-file-name)))
-
-(set-frame-parameter nil 'alpha-background 95)
-(set-frame-parameter nil 'cursor-color "coral")
-(setq display-battery-mode 1)
-(setq calendar-week-start-day 1)
-(use-package csv-mode)
-
-(display-time-mode 1)
-
-(use-package format-all)
-(use-package ialign)
-(global-set-key (kbd "C-c l") #'ialign)
-
-(use-package sr-speedbar)
-(setq sr-speedbar-right-side nil)
-(global-set-key (kbd "C-c t") 'sr-speedbar-toggle)
-
-(setq zone-when-idle 120)
-(add-to-list 'load-path "~/.emacs.d/extra/nethack_el")
-(add-to-list 'load-path "~/.emacs.d/extra/")
-(require 'tron)
-(autoload 'mine-sweeper "mine-sweeper" nil t)
-;;(require 'mine-sweeper)
-(global-set-key (kbd "M-z") 'zap-up-to-char)
-(global-set-key (kbd "C-M-z") 'zap-to-char)
-(setq next-line-add-newlines t)
-(setq gc-cons-threshold 1600000)
-(global-set-key (kbd "M-i") 'imenu)				;;Binding for imenu
-(setq inferior-lisp-program "sbcl")				;;set the common lisp to SBCL
-(tool-bar-mode -1)						;; remove the tool bar
-(setq undo-limit 240000)					;; Change the undo limit to 240000 bytes - might need tweaking
-;(global-set-key (kbd "C-c M-x") 'execute-extended-command)
-(global-set-key (kbd "C-c C-s") 'sly)
-;(add-to-list 'load-path "~/.emacs.d/extra/tracker-mode/")	;;probs remove, was for funny joke
-;(delete-selection-mode 0)
-(setq org-support-shift-select t)
-(setq org-image-actual-width 400)
-;;;; Visuals
-
-
-;;;Clojure
-(use-package cider)
-(add-hook 'clojure-mode-hook 'eglot-ensure)
-(use-package paredit)
-(add-hook 'clojure-mode-hook 'paredit-mode-hook)
-
-;;Git gutter stuff
+;; Git Gutter Stuff
 (use-package git-gutter
   :hook (prog-mode . git-gutter-mode)
   :config
   (setq git-gutter:update-interval 0.02))
+
+(use-package color-identifiers-mode
+  :config (add-hook 'after-init-hook 'global-color-identifiers-mode))
 
 (use-package git-gutter-fringe
   :config
@@ -324,360 +290,363 @@
   (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
   (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 
-;;pdf-tools
-(use-package pdf-tools
-  :config
-  (pdf-tools-install))
-
-;;Common lisp
-
-;;Uncomment this if stop using sly
-;;(use-package slime
-;;  :config
-;;  (setq inferior-lisp-program "sbcl")
-;;  (add-to-list 'auto-mode-alist '("\\.lisp\\'" . slime-mode))
-;;  (setq slime-contribs '(slime-fancy)))
-
-;;beacon mode
+;;Beacon Mode
 (use-package beacon
   :config
   (beacon-mode 1)
   (setq beacon-size 40)
   (setq beacon-blink-duration 1))
 
-;; Screen size on startup
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-(setq initial-frame-alist default-frame-alist)
+(use-package format-all)
 
-;;svg fix (might not be needed when 29 comes out and school updates)
-(setq image-types (cons 'svg image-types))
+(use-package ialign
+  :config
+  (global-set-key (kbd "C-c l") #'ialign))
 
-;;Hopefully improvements to autocomplete and stuff
-(setq read-process-output-max (* 1024 1024)) ;; 1mb
-
-;;basic settings
-(scroll-bar-mode -1)
-(global-display-line-numbers-mode 1)
-
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
-(package-initialize)
-
-;;use package stuff
-(unless (package-installed-p 'use-package)
-  (package-refresh-contents)
-  (package-install 'use-package))
-(eval-and-compile
-  (setq use-package-always-ensure t
-        use-package-expand-minimally t))
-
-;;straight startup stuff
-(defvar bootstrap-version)
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 6))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/radian-software/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
-
-;;start other stuff
+(use-package sr-speedbar
+  :config
+  (setq sr-speedbar-right-side nil)
+  (global-set-key (kbd "C-c t") 'sr-speedbar-toggle))
 
 (use-package projectile
   :init
   (projectile-mode +1)
   :bind (:map projectile-mode-map
-	      ("C-c p" . projectile-command-map)));;poss configure idk
-
-;;treemacs used to be here, it's dead now
-
-;;Uncomment if I ever use persp mode
-;(use-package treemacs-persp ;;treemacs-perspective if you use perspective.el vs. persp-mode
-;  :after (treemacs persp-mode) ;;or perspective vs. persp-mode
-;  :ensure t
-;  :config (treemacs-set-scope-type 'Perspectives))
-
-;;Uncomment if I ever use tab bars
-;(use-package treemacs-tab-bar ;;treemacs-tab-bar if you use tab-bar-mode
-;  :after (treemacs)
-;  :ensure t
-;  :config (treemacs-set-scope-type 'Tabs))
-
-(use-package all-the-icons)
+	      ("C-c p" . projectile-command-map)))
 
 (use-package which-key
   :config
   (which-key-mode)
   (which-key-setup-side-window-bottom)
-  (setq which-key-idle-delay 0.2))
+  (setq which-key-idle-delay 0.1))
 
-;;;clipboard
-(use-package clipetty
-  :ensure t
-  :hook (after-init . global-clipetty-mode))
+(use-package all-the-icons
+  :if (display-graphic-p))
 
-;;;devdocs
 (use-package devdocs
   :config (global-set-key (kbd "C-h z") 'devdocs-lookup))
-
-;;;prism
-;;(use-package prism)
-
-;;;Eglot
-(use-package eglot-java)
-
-;(add-hook 'java-mode-hook 'eglot-ensure)
-(add-hook 'java-mode-hook 'eglot-java-mode)
-(add-hook 'c++-mode-hook 'eglot-ensure)
-(add-hook 'processing-mode 'eglot-ensure)
-
-;; ;;LSP STUFF
-;; (use-package lsp-mode
-;;   :commands lsp
-;;   :init
-;;   (setq lsp-keymap-prefix "C-c l")
-;;   :hook
-;;   ((ruby-mode
-;;     ;c++-mode
-;;     ;java-mode
-;;     ;c-mode
-;;     html-mode) . lsp-deferred)
-;;   :config
-;;   ;; (setq lsp-prefer-flymake nil)
-;;   ;; (setq lsp-log-io nil)
-;;   ;; (setq gc-cons-threshold 100000000) ;;maybe edit this to try out some stuff
-;;   (setq lsp-ruby-stdio-command '("solargraph" "stdio")
-;; 	lsp-solargraph-library-directories '("~/.local/share/gem"))
-;;   (lsp-enable-which-key-integration t)
-;;   (lsp-headerline-breadcrumb-mode))
-
-;; ;; (use-package lsp-java
-;; ;;   :config (add-hook 'java-mode-hook #'lsp))
-  
-;; (with-eval-after-load 'lsp-mode
-;;   (add-hook 'lsp-mode-hook #'lsp-enable-which-key-integration))
-
-;; (use-package lsp-ivy)
 
 (use-package quickrun
   :bind ("C-c r" . quickrun))
 
-;;;Web dev stuff
-(use-package web-mode
-  :config
-  (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.css\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.js\\'" . web-mode))
-  (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode)))
-(defun my-web-mode-hook ()
-  "Hooks for web-mode"
-  (setq web-mode-markup-indent-offset 2)
-  (setq web-mode-css-indent-offset 2)
-  (setq web-mode-code-indent-offset 2))
-(add-hook 'web-mode-hook 'my-web-mode-hook)
-;;(add-hook 'html-mode-hook #'lsp)
-;;(add-hook 'web-mode-hook #'lsp)
-
-
-(use-package prettier-js
-  :config
-  (add-hook 'js2-mode-hook 'prettier-js-mode)
-  (add-hook 'web-mode-hook 'prettier-js-mode))
-
-(use-package impatient-mode)
-(use-package skewer-mode)
-(use-package php-mode)
-(use-package js2-mode)
-(use-package emmet-mode)
 (use-package rainbow-mode)
-
-(add-hook 'web-mode-hook #'emmet-mode)
 
 (use-package iedit)
 
-(use-package haskell-mode)
-;; (use-package lsp-haskell
-;;   :config
-;;   (add-hook 'haskell-mode-hook #'lsp)
-;;   (add-hook 'haskell-literate-mode-hook #'lsp))
-
-;; (use-package yaml-mode
-;;   :config
-;;   (add-hook 'yaml-mode-hook
-;; 	    (lambda ()
-;; 	      (define-key yaml-mode-map "\C-m" 'newline-and-indent)))
-;;   (add-hook 'yaml-mode-hook #'lsp))
-(use-package indent-tools)
-
-
-
-;; (use-package lsp-ui
-;;   :commands lsp-ui-mode
-;;  ;; :hook (lsp-mode . lsp-ui-mode)
-;;   :config
-;;   (setq lsp-ui-doc-enable t)
-;;   (setq lsp-ui-doc-header t)
-;;   (setq lsp-ui-doc-include-signature t)
-;;   (setq lsp-ui-doc-border (face-foreground 'default))
-;;   (setq lsp-ui-sideline-show-code-actions t)
-;;   (setq lsp-ui-sideline-show-diagnostics t)
-;;   (setq lsp-ui-sideline-delay 0.05))
-;;  ; (setq lsp-ui-doc-position 'bottom)
-;;  ; (setq lsp-ui-sideline-enable nil)
-;;  ; (setq lsp-ui-sideline-show-hover nil)
-
-;; ;; (use-package lsp-java
-;; ;;   :after lsp
-;; ;;   :config (add-hook 'java-mode-hook 'lsp))
-
-;; ;; (use-package lsp-treemacs
-;; ;;   :after lsp)
-
-;; (add-hook 'lsp-mode-hook 'lsp-ui-mode)
-
-;;; Flycheck stuff
 (use-package flycheck
-  :init (add-hook 'after-init-hook #'global-flycheck-mode))
-  
-;; (setq lsp-message-project-root-warning t)
-;; (setq lsp-message-project-root-error t)
+  :init
+  (global-flycheck-mode))
 
-;; (global-set-key (kbd "C-c C-d") 'lsp-describe-thing-at-point)
+(use-package dash)
 
-(use-package yasnippet)
-(use-package yasnippet-snippets)
-(yas-reload-all)
-(add-hook 'prog-mode-hook #'yas-minor-mode)
+(use-package yasnippet
+  :config (yas-global-mode 1))
 
-(use-package company
+(use-package yasnippet-snippets
+  :after (yasnippet))
+
+;;Helpful
+(use-package helpful
   :config
-  (add-hook 'after-init-hook 'global-company-mode)
-  (setq company-minimum-prefix-length 1)
-  (setq company-idle-delay 0.0)) ;;probably tweak these
+  ;; Note that the built-in `describe-function' includes both functions
+  ;; and macros. `helpful-function' is functions only, so we provide
+  ;; `helpful-callable' as a drop-in replacement.
+  (global-set-key (kbd "C-h f") #'helpful-callable)
+  (global-set-key (kbd "C-h v") #'helpful-variable)
+  (global-set-key (kbd "C-h k") #'helpful-key)
+  (global-set-key (kbd "C-h x") #'helpful-command)
+  ;; Lookup the current symbol at point. C-c C-d is a common keybinding
+  ;; for this in lisp modes.
+  (global-set-key (kbd "C-c C-d") #'helpful-at-point)
 
-(use-package company-quickhelp
-  :config (company-quickhelp-mode)
-  (setq company-quickhelp-delay 0))
+  ;; Look up *F*unctions (excludes macros).
+  ;;
+  ;; By default, C-h F is bound to `Info-goto-emacs-command-node'. Helpful
+  ;; already links to the manual, if a function is referenced there.
+  (global-set-key (kbd "C-h F") #'helpful-function))
 
-(use-package company-box
-  :hook (company-mode . company-box-mode)
-  :config (setq company-box-icons-alist 'company-box-icons-all-the-icons)
-  (setq company-tooltip-minimum-width 60)
-  (setq company-tooltip-minimum 10))
+(use-package rainbow-delimiters
+  :hook (prog-mode . rainbow-delimiters-mode))
+
+(use-package ctrlf
+  :config (ctrlf-mode +1))
+
+;---------------------------------------------------------
+;;;;;;;;;;;;;;;;;
+;; DIRED stuff ;;
+;;;;;;;;;;;;;;;;;
+
+(use-package dirvish
+  :init (dirvish-override-dired-mode)
+  :config
+  (global-set-key (kbd "C-x d") 'dirvish-dwim)) ;maybe replace with just dirvish
+
+(use-package dired-filter)
+
+(setq dired-dwim-target t)
+
+(use-package all-the-icons-dired
+  :hook (dired-mode . all-the-icons-dired-mode))
+
+;---------------------------------------------------------
+;;;;;;;;;;;;;;;;;;;;;;;
+;; Programming Modes ;;
+;;;;;;;;;;;;;;;;;;;;;;;
+
+;;; Processing
+(use-package processing-mode
+  :config
+  (setq processing-location "~/processing-4.3/processing-java")
+  (setq processing-application-dir "~/processing-4.3/processing")
+  (setq processing-sketchbook-dir "~/sketchbook"))
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+	       '(processing-mode . ("~/processing-4.3/processing-lsp" "--stdio"))))
+
+(when *using-eglot*
+  (use-package eglot-java)
+  (add-hook 'java-mode-hook 'eglot-java-mode)
+  (add-hook 'c++-mode-hook 'eglot-ensure)
+  (add-hook 'processing-mode 'eglot-ensure))
+
+;;;Clojure
+(use-package cider)
+(when *using-eglot*
+  (add-hook 'clojure-mode-hook 'eglot-ensure))
+(use-package paredit)
+(add-hook 'clojure-mode-hook 'paredit-mode-hook)
+
+;---------------------------------------------------------
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Completion Packages ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Corfu ;;
+(when *using-corfu*
+  (use-package corfu
+    :custom
+    (corfu-cycle t)                 ; Allows cycling through candidates
+    (corfu-auto t)                  ; Enable auto completion
+    (corfu-auto-prefix 2)
+    (corfu-auto-delay 0.0)
+    (corfu-popupinfo-delay '(0.5 . 0.2))
+    (corfu-preview-current 'insert) ; Do not preview current candidate
+    (corfu-preselect 'prompt)
+    (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
+    
+    :init
+    (global-corfu-mode)
+    (corfu-history-mode)
+    (corfu-popupinfo-mode) ; Popup completion info
+    :config
+    (setq corfu-sources
+	  '(corfu-source-company-capf))))
+
+;; Company ;;
+
+(when *using-company*
+  (use-package company
+    :config
+    (add-hook 'after-init-hook 'global-company-mode)
+    (setq company-minimum-prefix-length 1)
+    (setq company-idle-delay 0.0)) ;;probably tweak these
+
+  (use-package company-quickhelp
+    :config (company-quickhelp-mode)
+    (setq company-quickhelp-delay 0))
+
+  (use-package company-box
+    :hook (company-mode . company-box-mode)
+    :config (setq company-box-icons-alist 'company-box-icons-all-the-icons)
+    (setq company-tooltip-minimum-width 60)
+    (setq company-tooltip-minimum 10)))
+;---------------------------------------------------------
+;;;;;;;;;;;;;;;;;;;;
+;; Vertico Config ;;
+;;;;;;;;;;;;;;;;;;;;
+
+(when *using-vertico*
+  (use-package vertico
+    :init (vertico-mode)
+    :config
+    (setq vertico-count 20)
+    (setq vertico-resize t)
+    (setq vertico-cycle t))
+  
+  (use-package marginalia
+    :after vertico
+    :bind (:map minibuffer-local-map
+		("M-A" . marginalia-cycle))
+    :init (marginalia-mode)
+    :config
+    (setq marginalia-align 'right))
+  
+  (use-package savehist
+    :init (savehist-mode))
+  
+  (use-package all-the-icons-completion
+    :after (marginalia all-the-icons)
+    :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
+    :init (all-the-icons-completion-mode))
+  
+  (use-package orderless
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles basic partial-completion)))))
+  
+  (use-package consult ;probably revise this
+    :bind (;; C-c bindings in `mode-specific-map'
+          ("C-c M-x" . consult-mode-command)
+          ("C-c h" . consult-history)
+          ("C-c k" . consult-kmacro)
+          ("C-c m" . consult-man)
+          ("C-c i" . consult-info)
+          ([remap Info-search] . consult-info)
+          ;; C-x bindings in `ctl-x-map'
+          ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+          ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+          ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+          ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+          ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+          ;; Custom M-# bindings for fast register access
+          ("M-#" . consult-register-load)
+          ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+          ("C-M-#" . consult-register)
+          ;; Other custom bindings
+          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+          ;; M-g bindings in `goto-map'
+          ("M-g e" . consult-compile-error)
+          ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+          ("M-g g" . consult-goto-line)             ;; orig. goto-line
+          ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+          ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+          ("M-g m" . consult-mark)
+          ("M-g k" . consult-global-mark)
+          ("M-g i" . consult-imenu)
+          ("M-g I" . consult-imenu-multi)
+          ;; M-s bindings in `search-map'
+          ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+          ("M-s D" . consult-locate)
+          ("M-s g" . consult-grep)
+          ("M-s G" . consult-git-grep)
+          ("M-s r" . consult-ripgrep)
+          ("M-s l" . consult-line)
+          ("M-s L" . consult-line-multi)
+          ("M-s k" . consult-keep-lines)
+          ("M-s u" . consult-focus-lines)
+          ;; Isearch integration
+          ("M-s e" . consult-isearch-history)
+          :map isearch-mode-map
+          ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+          ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+          ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+          ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+          ;; Minibuffer history
+          :map minibuffer-local-map
+          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+          ("M-r" . consult-history))                ;; orig. previous-matching-history-element)
+    :hook (completion-list-mode . consult-preview-at-point-mode)
+    :init
+    (setq register-preview-delay 0.5
+          register-preview-function #'consult-register-format)
+    (advice-add #'register-preview :override #'consult-register-window)
+    
+    (setq xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref)
+
+    :config
+    (consult-customize
+     consult-theme :preview-key '(:debounce 0.2 any)
+     consult-ripgrep consult-git-grep consult-grep
+     consult-bookmark consult-recent-file consult-xref
+     consult--source-bookmark consult--source-file-register
+     consult--source-recent-file consult--source-project-recent-file
+     ;; :preview-key "M-."
+     :preview-key '(:debounce 0.4 any))
+    (setq consult-narrow-key "<")) ;; "C-+"
+
+  (use-package embark
+    :bind
+    (("C-." . embark-act)         ;; pick some comfortable binding
+     ("C-;" . embark-dwim)        ;; good alternative: M-.
+     ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings')
+
+    :init
+    (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+    :config
+    ;; Hide the mode line of the Embark live/completions buffers
+    (add-to-list 'display-buffer-alist
+		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                   nil
+                   (window-parameters (mode-line-format . none)))))
+
+  (use-package embark-consult
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
+  
+  (use-package emacs
+    :init
+    (setq enable-recursive-minibuffers t)))
+
+;---------------------------------------------------------
+;;;;;;;;;;;;;;;
+;; IVY stuff ;;
+;;;;;;;;;;;;;;;
+
+(when *using-ivy*
+  (use-package ivy
+    :config
+    (ivy-mode 1)
+    (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
+    (setq ivy-height 20)) ;probs tweak a bit
+
+  (use-package ivy-rich
+    :after (ivy counsel)
+    :init
+    (ivy-rich-mode 1))
+
+  (use-package all-the-icons-ivy
+    :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
+
+  (use-package counsel
+    :after (ivy)
+    :config
+    (counsel-mode 1))
+
+  (use-package ivy-prescient
+    :after (prescient ivy counsel)
+    :config
+    (setq ivy-prescient-sort-commands
+          '(:not swiper
+		 counsel-grep
+		 counsel-rg
+		 counsel-projectile-rg
+		 ivy-switch-buffer
+		 counsel-switch-buffer))
+    (setq ivy-prescient-retain-classic-highlighting t)
+    (ivy-prescient-mode +1))
+
+  (use-package company-prescient
+    :after (prescient company)
+    :config
+    (company-prescient-mode +1)))
+
+
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(company-box-scrollbar nil)
  '(custom-enabled-themes '(dracula))
  '(custom-safe-themes
-   '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" "628278136f88aa1a151bb2d6c8a86bf2b7631fbea5f0f76cba2a0079cd910f7d" "06f0b439b62164c6f8f84fdda32b62fb50b6d00e8b01c2208e55543a6337433a" "288482f5c627c1fe5a1d26fcc17ec6ca8837f36bf940db809895bf3f8e2e4edd" "c74e83f8aa4c78a121b52146eadb792c9facc5b1f02c917e3dbb454fca931223" "3c83b3676d796422704082049fc38b6966bcad960f896669dfc21a7a37a748fa" "ec101eeff0195d92c3dc0c1c60edb1a84fa2adbbe8fdfea2a423aa95d1edc4d7" default))
- '(forge-alist
-   '(("github.com" "api.github.com" "github.com" forge-github-repository)
-     ("gitlab.com" "gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository)
-     ("salsa.debian.org" "salsa.debian.org/api/v4" "salsa.debian.org" forge-gitlab-repository)
-     ("framagit.org" "framagit.org/api/v4" "framagit.org" forge-gitlab-repository)
-     ("gitlab.gnome.org" "gitlab.gnome.org/api/v4" "gitlab.gnome.org" forge-gitlab-repository)
-     ("codeberg.org" "codeberg.org/api/v1" "codeberg.org" forge-gitea-repository)
-     ("code.orgmode.org" "code.orgmode.org/api/v1" "code.orgmode.org" forge-gogs-repository)
-     ("bitbucket.org" "api.bitbucket.org/2.0" "bitbucket.org" forge-bitbucket-repository)
-     ("git.savannah.gnu.org" nil "git.savannah.gnu.org" forge-cgit**-repository)
-     ("git.kernel.org" nil "git.kernel.org" forge-cgit-repository)
-     ("repo.or.cz" nil "repo.or.cz" forge-repoorcz-repository)
-     ("git.suckless.org" nil "git.suckless.org" forge-stagit-repository)
-     ("git.sr.ht" nil "git.sr.ht" forge-srht-repository)
-     ("gitlab.ecs.vuw.ac.nz" "gitlab.ecs.vuw.ac.nz/api/v4" "gitlab.ecs.vuw.ac.nz" forge-gitlab-repository)))
- '(global-display-line-numbers-mode t)
- '(inhibit-startup-screen t)
+   '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(package-selected-packages
-   '(minimap centaur-tabs projectile page-break-lines use-package dashboard sublimity catppuccin-theme ##))
- '(scalable-fonts-allowed t)
- '(size-ication-mode t)
- '(tool-bar-mode nil))
+   '(embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
-
-
-(require 'sublimity)
-(require 'sublimity-scroll)
-;(require 'sublimity-map)
-(sublimity-mode 1)
-;; (setq sublimity-map-size 20)
-;; (setq sublimity-map-fraction 0.3)
-;; (setq sublimity-map-text-scale -7)
-;; (setq sublimity-map-set-delay 20)
-;; (add-hook 'sublimity-map-setup-hook
-;;           (lambda ()
-;;             (setq buffer-face-mode-face '(:family "Monospace"))
-;;             (buffer-face-mode)))
-
-
-(use-package octicons)
-(use-package nerd-icons)
-
-
-;;dashboard stuff
-(use-package dashboard
-  :config
-  (setq dashboard-center-content t)
-  (setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
-  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
-  (setq dashboard-projects-backend 'projectile)
-  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
-  (setq dashboard-items '((recents . 5)
-	                  (projects . 5)	                  
-	                  (bookmarks . 5)
-			  (registers . 5)
-			  (agenda . 5)))
-  ;;(setq dashboard-icon-type 'nerd-icons) ;; use `nerd-icons' package
-  ;;(setq dashboard-set-heading-icons t)
-  ;;(setq dashboard-set-file-icons t)
-  ;;(setq dashboard-set-navigator t)
-  ;; (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*"))) ;For if I ever use the Daemon
-  (dashboard-setup-startup-hook))
-
-(use-package centaur-tabs
-  :ensure t
-  :demand
-  :config
-  (centaur-tabs-mode t)
-  (centaur-tabs-headline-match)
-  (setq centaur-tabs-style "slant")
-  (setq centaur-tabs-set-icons t)
-  (setq centaur-tabs-set-bar 'under)
-  (setq x-underline-at-descent-line t)
-  (setq centaur-tabs-cycle-scope 'tabs)
-  (setq centaur-tabs-group-by-projectile-project 1)
-  :bind
-  ("C-<iso-lefttab>" . centaur-tabs-backward)
-  ("C-<tab>" . centaur-tabs-forward))
-
-(use-package smartparens
-  :init (require 'smartparens-config)
-  :config (add-hook 'prog-mode-hook #'smartparens-mode))
-
-(use-package undo-tree
-  :config (global-undo-tree-mode)
-  (setq undo-tree-auto-save-history t))
-
-(winner-mode 1)
-
-(use-package dracula-theme
-  :init (load-theme 'dracula t))
-
-;; (use-package catppuccin-theme
-;;   :config
-;;   (setq catppuccin-flavor 'macchiato)
-;;   (load-theme 'catppuccin t))
-
-(put 'narrow-to-region 'disabled nil)
