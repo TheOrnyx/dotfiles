@@ -1,43 +1,25 @@
+;;; .emacs --- My Emacs Config File
+
+;; Author: Zaki Si-Lounis <cthulhu345@gmail.com>
+
 ;;TODO
 ;;
-;; make thing look better and disable scroll bar etc
-;; git
-;; set keybinds https://github.com/nixin72/k-nav.el
 ;; maybe check out hydra
-;; maybe check out MEOW
-;; Poss fix minibuffer height if that becomes a problem
 ;; possibly switch to init.el
-;; probably reorganize
 ;; maybe install persp mode
 ;; make some better comments
-;; possibly configure some of the autocomplete kinda stuff - kinda done but can probs be fixed, delay is kidna fucked sometimes
-;; remove some of the commented out chunks that aren't and won't be needed
-;; convert this to init.el poss and git that shit
-;; convert some of the regular require package to use-package
 ;; set up workspace stuff
-;; probably sort the packages and stuff into config, packages etc
-;; check out pulsar - maybe a replacement for beacon
-;; check out ace popup menu
-;; probably fix my stupid ocitcon thing
-;; Maybe fix some of the free variable errors etc lmao
 ;; probably make my own theme tbh, this one's nice but customize yass
-;; check out HELM
 ;; probably tweak my comments to use proper conventions
 ;; ADD THE SNIPPET FOLDER TO THE GITHUB!!!!
 ;; Probably add some stuff for markdown and org mode
 ;; also learn org mode dickhead
 ;; ELECTRIC MODE PARENTHESIS BLAHHHH
+;; Possibly install
 
-;;Probably check out tabbar mode
+;;;Code
 
-;;;; NOTES ABOUT THE COMMENT CONVENTIONS
-;-----------------------------------------------
-; ;Single semicolons (;) should be used (format "message" format-args)or inline comments.
-; ;Double semicolons (;;) should be used for line comments.
-; ;Triple semicolons (;;;) should be used for "comments that should be considered a heading by Outline minor mode"
-; ;Quadruple semicolons (;;;;) should be used for headings of major sections of a program.
 ;----------------------------------------------
-
 ;;;;;;;;;;;;;;;;;;;
 ;; Package Setup ;;
 ;;;;;;;;;;;;;;;;;;;
@@ -650,3 +632,4 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  )
+;;; filename ends here
