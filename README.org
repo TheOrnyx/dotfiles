@@ -1,0 +1,7 @@
+#+TITLE: My Dotfiles
+#+AUTHOR: Zaki Si-Lounis
+
+These are my Dotfiles, feel free to download and use any parts you
+want, or just use them for reference.
+
+I use GNU Stow to manage them but you can use whatever you want.
