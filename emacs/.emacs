@@ -112,6 +112,7 @@
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(global-set-key [remap dabbrev-expand] 'hippie-expand) ;Rebind to use hippie-expand 
 (winner-mode 1)
 (setq confirm-kill-emacs #'yes-or-no-p) ;;Confirm exist
 (setq shell-file-name "/bin/sh") ;; Fixes ripgrep issues
@@ -338,9 +339,9 @@
 ;;;;;;;;;;;;;;;;;
 
 (use-package dirvish
-  :init (dirvish-override-dired-mode)
+  ;:init (dirvish-override-dired-mode)
   :config
-  (global-set-key (kbd "C-x d") 'dirvish-dwim)) ;maybe replace with just dirvish
+  (global-set-key (kbd "C-x D") 'dirvish-dwim)) ;maybe replace with just dirvish
 
 (use-package dired-filter)
 
@@ -394,7 +395,9 @@
     (corfu-preview-current 'insert) ; Do not preview current candidate
     (corfu-preselect 'prompt)
     (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
-    
+    (corfu-min-width 50)
+    (corfu-max-width corfu-min-width)       ; Always have the same width
+    (corfu-count 14)
     :init
     (global-corfu-mode)
     (corfu-history-mode)
@@ -402,6 +405,17 @@
     :config
     (setq corfu-sources
 	  '(corfu-source-company-capf))))
+
+(use-package kind-icon
+  :after corfu
+  :custom
+  (kind-icon-use-icons t)
+  (kind-icon-default-face 'corfu-default) ; Have background color be the same as `corfu' face background
+  (kind-icon-blend-background nil)  ; Use midpoint color between foreground and background colors ("blended")?
+  (kind-icon-blend-frac 0.08)
+  :config
+  (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)) ; Enable `kind-icon')
+
 
 ;; Company ;;
 
@@ -421,6 +435,15 @@
     :config (setq company-box-icons-alist 'company-box-icons-all-the-icons)
     (setq company-tooltip-minimum-width 60)
     (setq company-tooltip-minimum 10)))
+
+;; Cape ;;
+(use-package cape
+  :defer 10
+  :bind ("C-c f" . cape-file)
+  :init
+  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+  (add-to-list 'completion-at-point-functions #'cape-file)
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;
 ;; Vertico Config ;;
@@ -604,7 +627,7 @@
  '(custom-safe-themes
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(package-selected-packages
-   '(embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
