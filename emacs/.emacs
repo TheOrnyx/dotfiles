@@ -93,12 +93,13 @@
 
 (use-package dashboard
   :config
+  (setq dashboard-startup-banner 3)
   (setq dashboard-center-content t)
   (setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
   (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
-  (setq dashboard-projects-backend 'projectile)
-  (setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
-  (setq dashboard-items '((recents . 5)
+  (setq dashboard-projects-backend 'project-el)
+  ;(setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
+  (setq dashboard-items '((recents . 10)
 	                  (projects . 5)
 	                  (bookmarks . 5)
 			  (registers . 5)
@@ -112,6 +113,9 @@
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(c-set-offset 'case-label '+)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(semantic-mode 1)
 (global-set-key [remap dabbrev-expand] 'hippie-expand) ;Rebind to use hippie-expand 
 (winner-mode 1)
 (setq confirm-kill-emacs #'yes-or-no-p) ;;Confirm exist
@@ -255,7 +259,7 @@
 ;;Beacon Mode
 (use-package beacon
   :config
-  (beacon-mode 1)
+  ;(beacon-mode 1)
   (setq beacon-size 40)
   (setq beacon-blink-duration 1))
 
@@ -354,6 +358,22 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
+
+;;Ruby
+(use-package robe
+  :config
+  (add-hook 'ruby-mode-hook 'robe-mode)
+  (add-hook 'ruby-ts-mode-hook 'robe-mode))
+
+(use-package bundler)
+
+(use-package flymake-ruby
+  :config
+  (add-hook 'ruby-mode-hook 'flymake-ruby-load))
+
+(use-package inf-ruby
+  :config
+  (add-hook 'ruby-mode-hook 'inf-ruby-minor-mode))
 
 ;;; Processing
 (use-package processing-mode
@@ -550,6 +570,8 @@
      :preview-key '(:debounce 0.4 any))
     (setq consult-narrow-key "<")) ;; "C-+"
 
+  (use-package consult-eglot)
+
   (use-package embark
     :bind
     (("C-." . embark-act)         ;; pick some comfortable binding
@@ -627,11 +649,11 @@
  '(custom-safe-themes
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(package-selected-packages
-   '(kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(corfu-default ((t (:background "#461D4E")))))
 ;;; filename ends here
