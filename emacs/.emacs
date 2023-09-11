@@ -40,7 +40,11 @@
 (require 'use-package)
 ;---------------------------------------------------------
 
-;;;Treesitter
+;;;;;;;;;;;;;;;;
+;; Treesitter ;;
+;;;;;;;;;;;;;;;;
+
+;;Language grammars
 (setq treesit-language-source-alist
       '((bash "https://github.com/tree-sitter/tree-sitter-bash")
 	(java "https://github.com/tree-sitter/tree-sitter-java")
@@ -65,6 +69,9 @@
 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
 	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
 
+;; ;;Remap existing modes
+;; (setq major-mode-remap-alist
+;;       '((ruby-mode . ruby-ts-mode)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Controllers for different sections ;;
@@ -112,6 +119,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq recentf-max-saved-items 60)
+(global-set-key (kbd "C-x C-r") 'recentf)
 
 (c-set-offset 'case-label '+)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
@@ -213,6 +223,9 @@
   :config
   (org-roam-setup))
 
+;;Mail
+(use-package notmuch)
+
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Project Configs ;;
@@ -248,7 +261,12 @@
   (setq git-gutter:update-interval 0.02))
 
 (use-package color-identifiers-mode
-  :config (add-hook 'after-init-hook 'global-color-identifiers-mode))
+  :config
+  (add-to-list
+   'color-identifiers:modes-alist
+   `(java-ts-mode . ("" "\\_<\\([a-zA-Z_$]\\(?:\\s_\\|\\sw\\)*\\)"
+                     (nil font-lock-variable-name-face))))
+  (add-hook 'after-init-hook 'global-color-identifiers-mode))
 
 (use-package git-gutter-fringe
   :config
@@ -297,7 +315,8 @@
 
 (use-package rainbow-mode)
 
-(use-package iedit)
+(use-package iedit
+  :config (global-set-key (kbd "C-:") 'iedit-mode))
 
 (use-package flycheck
   :init
@@ -358,6 +377,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
+
+;;General programming mode configs
+(add-hook 'prog-mode-hook #'subword-mode)
 
 ;;Ruby
 (use-package robe
@@ -464,8 +486,15 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+
+(use-package yasnippet-capf
+  :after (cape)
+  :config
+  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+
 ;---------------------------------------------------------
-;;;;;;;;;;;;;;;;;;;;
+;;
+;;;;;;;;;;;;;;;;;;
 ;; Vertico Config ;;
 ;;;;;;;;;;;;;;;;;;;;
 
@@ -500,56 +529,57 @@
   
   (use-package consult ;probably revise this
     :bind (;; C-c bindings in `mode-specific-map'
-          ("C-c M-x" . consult-mode-command)
-          ("C-c h" . consult-history)
-          ("C-c k" . consult-kmacro)
-          ("C-c m" . consult-man)
-          ("C-c i" . consult-info)
-          ([remap Info-search] . consult-info)
-          ;; C-x bindings in `ctl-x-map'
-          ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
-          ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
-          ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
-          ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
-          ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
-          ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
-          ;; Custom M-# bindings for fast register access
-          ("M-#" . consult-register-load)
-          ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
-          ("C-M-#" . consult-register)
-          ;; Other custom bindings
-          ("M-y" . consult-yank-pop)                ;; orig. yank-pop
-          ;; M-g bindings in `goto-map'
-          ("M-g e" . consult-compile-error)
-          ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
-          ("M-g g" . consult-goto-line)             ;; orig. goto-line
-          ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
-          ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
-          ("M-g m" . consult-mark)
-          ("M-g k" . consult-global-mark)
-          ("M-g i" . consult-imenu)
-          ("M-g I" . consult-imenu-multi)
-          ;; M-s bindings in `search-map'
-          ("M-s d" . consult-find)                  ;; Alternative: consult-fd
-          ("M-s D" . consult-locate)
-          ("M-s g" . consult-grep)
-          ("M-s G" . consult-git-grep)
-          ("M-s r" . consult-ripgrep)
-          ("M-s l" . consult-line)
-          ("M-s L" . consult-line-multi)
-          ("M-s k" . consult-keep-lines)
-          ("M-s u" . consult-focus-lines)
-          ;; Isearch integration
-          ("M-s e" . consult-isearch-history)
-          :map isearch-mode-map
-          ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
-          ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
-          ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
-          ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
-          ;; Minibuffer history
-          :map minibuffer-local-map
-          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
-          ("M-r" . consult-history))                ;; orig. previous-matching-history-element)
+	   ("M-g M-i" . consult-imenu-multi)
+           ("C-c M-x" . consult-mode-command)
+           ("C-c h" . consult-history)
+           ("C-c k" . consult-kmacro)
+           ("C-c m" . consult-man)
+           ("C-c i" . consult-info)
+           ([remap Info-search] . consult-info)
+           ;; C-x bindings in `ctl-x-map'
+           ("C-x M-:" . consult-complex-command)     ;; orig. repeat-complex-command
+           ("C-x b" . consult-buffer)                ;; orig. switch-to-buffer
+           ("C-x 4 b" . consult-buffer-other-window) ;; orig. switch-to-buffer-other-window
+           ("C-x 5 b" . consult-buffer-other-frame)  ;; orig. switch-to-buffer-other-frame
+           ("C-x r b" . consult-bookmark)            ;; orig. bookmark-jump
+           ("C-x p b" . consult-project-buffer)      ;; orig. project-switch-to-buffer
+           ;; Custom M-# bindings for fast register access
+           ("M-#" . consult-register-load)
+           ("M-'" . consult-register-store)          ;; orig. abbrev-prefix-mark (unrelated)
+           ("C-M-#" . consult-register)
+           ;; Other custom bindings
+           ("M-y" . consult-yank-pop)                ;; orig. yank-pop
+           ;; M-g bindings in `goto-map'
+           ("M-g e" . consult-compile-error)
+           ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+           ("M-g g" . consult-goto-line)             ;; orig. goto-line
+           ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
+           ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
+           ("M-g m" . consult-mark)
+           ("M-g k" . consult-global-mark)
+           ("M-g i" . consult-imenu)
+           ("M-g I" . consult-imenu-multi)
+           ;; M-s bindings in `search-map'
+           ("M-s d" . consult-find)                  ;; Alternative: consult-fd
+           ("M-s D" . consult-locate)
+           ("M-s g" . consult-grep)
+           ("M-s G" . consult-git-grep)
+           ("M-s r" . consult-ripgrep)
+           ("M-s l" . consult-line)
+           ("M-s L" . consult-line-multi)
+           ("M-s k" . consult-keep-lines)
+           ("M-s u" . consult-focus-lines)
+           ;; Isearch integration
+           ("M-s e" . consult-isearch-history)
+           :map isearch-mode-map
+           ("M-e" . consult-isearch-history)         ;; orig. isearch-edit-string
+           ("M-s e" . consult-isearch-history)       ;; orig. isearch-edit-string
+           ("M-s l" . consult-line)                  ;; needed by consult-line to detect isearch
+           ("M-s L" . consult-line-multi)            ;; needed by consult-line to detect isearch
+           ;; Minibuffer history
+           :map minibuffer-local-map
+           ("M-s" . consult-history)                 ;; orig. next-matching-history-element
+           ("M-r" . consult-history))                ;; orig. previous-matching-history-element)
     :hook (completion-list-mode . consult-preview-at-point-mode)
     :init
     (setq register-preview-delay 0.5
@@ -649,7 +679,7 @@
  '(custom-safe-themes
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(package-selected-packages
-   '(flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
