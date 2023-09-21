@@ -28,7 +28,7 @@ window:
     x: 6
     y: 6
 
-  opacity: 1.0
+  opacity: 0.95
 
 font:
   size: 8.0
@@ -40,8 +40,8 @@ font:
 
 colors:
   primary:
-    foreground: '#ffffff'
-    background: '#28314F'
+    foreground: '#f8f8f2'
+    background: '#282a36'
 
   
 #window:
