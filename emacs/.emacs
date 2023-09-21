@@ -110,8 +110,8 @@
 	                  (projects . 5)
 	                  (bookmarks . 5)
 			  (registers . 5)
-			  (agenda . 5)))
-  (dashboard-setup-startup-hook))
+			  (agenda . 5))))
+  ;; (dashboard-setup-startup-hook))
 
 (use-package dracula-theme)
 ;---------------------------------------------------------
@@ -120,12 +120,24 @@
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;finish this later
+;; (defun kill-remove-whitespace ()
+;;   "kill item and remove trailing whitespace from it"
+;;   (interactive)
+  
+;;   (let (killed-item (kill-line))
+;;     )
+;;   )
+
+(setq-default inhibit-startup-screen t)
+(setq inhibit-splash-screen t)
+
+
 (setq recentf-max-saved-items 60)
 (global-set-key (kbd "C-x C-r") 'recentf)
 
-(c-set-offset 'case-label '+)
 (global-set-key (kbd "C-x C-b") 'ibuffer)
-(semantic-mode 1)
+;(semantic-mode 1)
 (global-set-key [remap dabbrev-expand] 'hippie-expand) ;Rebind to use hippie-expand 
 (winner-mode 1)
 (setq confirm-kill-emacs #'yes-or-no-p) ;;Confirm exist
@@ -142,6 +154,7 @@
   (kill-new (buffer-file-name)))
 
 (set-frame-parameter nil 'alpha-background 95)
+(add-to-list 'default-frame-alist '(alpha-background . 95))
 (set-frame-parameter nil 'cursor-color "coral")
 (setq display-battery-mode 1)
 (setq calendar-week-start-day 1)
@@ -176,6 +189,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Org Mode Configs and Packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-hook 'text-mode-hook #'flyspell-mode)
+(use-package ox-hugo
+  :after (ox))
 
 ;; forge ;;
 (use-package forge
@@ -253,6 +270,17 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extra Misc Packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;TOML
+(use-package toml-mode)
+
+;;For working with R
+(use-package ess)
+
+;;Discord prescence
+(use-package elcord
+  :config
+  (elcord-mode))
 
 ;; Git Gutter Stuff
 (use-package git-gutter
@@ -354,7 +382,7 @@
   :hook (prog-mode . rainbow-delimiters-mode))
 
 (use-package ctrlf
-  :config (ctrlf-mode +1))
+  :config) ;(ctrlf-mode nil))
 
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;
@@ -378,8 +406,20 @@
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package yaml-mode)
+
+(use-package haskell-mode)
+
+(use-package sly)
+
+;; Web Stuff ;;
+(use-package web-mode
+  :config
+  (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode)))
+
 ;;General programming mode configs
 (add-hook 'prog-mode-hook #'subword-mode)
+(c-set-offset 'case-label '+)
 
 ;;Ruby
 (use-package robe
@@ -402,7 +442,11 @@
   :config
   (setq processing-location "~/processing-4.3/processing-java")
   (setq processing-application-dir "~/processing-4.3/processing")
-  (setq processing-sketchbook-dir "~/sketchbook"))
+  (setq processing-sketchbook-dir "~/sketchbook")
+  (add-to-list
+   'color-identifiers:modes-alist
+   `(processing-mode . ("" "\\_<\\([a-zA-Z_$]\\(?:\\s_\\|\\sw\\)*\\)"
+			(nil font-lock-variable-name-face)))))
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
 	       '(processing-mode . ("~/processing-4.3/processing-lsp" "--stdio"))))
@@ -420,6 +464,11 @@
 (use-package paredit)
 (add-hook 'clojure-mode-hook 'paredit-mode-hook)
 
+;;Generic programming packages 
+(use-package hl-todo)
+(use-package flycheck-hl-todo
+  :after (hl-todo))
+
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Completion Packages ;;
@@ -431,13 +480,13 @@
     :custom
     (corfu-cycle t)                 ; Allows cycling through candidates
     (corfu-auto t)                  ; Enable auto completion
-    (corfu-auto-prefix 2)
+    (corfu-auto-prefix 1)
     (corfu-auto-delay 0.0)
     (corfu-popupinfo-delay '(0.5 . 0.2))
     (corfu-preview-current 'insert) ; Do not preview current candidate
     (corfu-preselect 'prompt)
     (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
-    (corfu-min-width 50)
+    (corfu-min-width 55)
     (corfu-max-width corfu-min-width)       ; Always have the same width
     (corfu-count 14)
     :init
@@ -678,8 +727,9 @@
  '(custom-enabled-themes '(dracula))
  '(custom-safe-themes
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
+ '(isearch-lazy-count t)
  '(package-selected-packages
-   '(yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
