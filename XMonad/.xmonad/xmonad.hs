@@ -23,12 +23,19 @@ import XMonad.Hooks.StatusBar.PP
 import XMonad.Util.SpawnOnce
 import XMonad.Layout.SimpleFloat
 import XMonad.Hooks.ManageHelpers
+import XMonad.Prompt
+import XMonad.Prompt.Shell
+import XMonad.Prompt.OrgMode
+
+--Layouts
+import XMonad.Layout.BinarySpacePartition
 
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 import Data.Attoparsec.ByteString.Char8 (space)
 import Xmobar (Monitors(Brightness))
 import XMonad.Layout.ThreeColumns (ThreeCol(ThreeCol, ThreeColMid))
+import XMonad.Prompt.FuzzyMatch
 
 -- The preferred terminal program, which is used in a binding below and by
 -- certain contrib modules.
@@ -83,7 +90,7 @@ myKeys conf@(XConfig {XMonad.modMask = modm}) = M.fromList $
     [ ((modm .|. shiftMask, xK_Return), spawn $ XMonad.terminal conf)
 
     -- launch dmenu
-    , ((modm,               xK_p     ), spawn "dmenu_run")
+    --, ((modm,               xK_p     ), spawn "dmenu_run")
 
     -- launch gmrun
     , ((modm .|. shiftMask, xK_p     ), spawn "gmrun")
@@ -208,7 +215,13 @@ mySpacing = spacingRaw False
             (Border 3 3 3 3)
             True
 
-myLayout = mySpacing $ avoidStruts tiled ||| Mirror tiled ||| Full ||| ThreeColMid 1 (3/100) (1/2)
+myLayout = mySpacing $ avoidStruts ( tiled
+                                     ||| Mirror tiled
+                                     ||| Full
+                                     ||| ThreeColMid 1 (3/100) (1/2)
+                                     ||| emptyBSP
+                                     ||| ThreeCol 1 (3/100) (1/2)
+                                     ||| simpleFloat)
   where
     
      -- default tiling algorithm partitions the screen into two panes
@@ -250,7 +263,9 @@ myManageHook = composeAll
     , className =? "copyq"          --> doFloat
     , className =? "SimpleScreenRecorder" --> doFloat
     , className =? "processing"     --> doFloat
-    , resource     =? "projectSketch"  --> doFloat]
+    , className =? "java"           --> doFloat
+    , className =? "DecisionTree"   --> doFloat
+    , resource  =? "projectSketch"  --> doFloat]
 
 ------------------------------------------------------------------------
 -- Event handling
@@ -270,6 +285,23 @@ myEventHook = mempty
 -- See the 'XMonad.Hooks.DynamicLog' extension for examples.
 --
 myLogHook = return ()
+
+------------------------------------------------------------------------
+-- Prompt
+myXPromptConfig :: XPConfig
+myXPromptConfig =
+  def
+  { font = "xft:Monospace:size=10"
+    , bgColor = "#282a36"
+    , fgColor = "#f8f8f2"
+    , complCaseSensitivity = CaseInSensitive
+    , promptBorderWidth = 1
+    , height = 32
+    , promptKeymap = emacsLikeXPKeymap
+    , maxComplColumns = Just 5
+    , position = Top }
+
+--Org mode
 
 ------------------------------------------------------------------------
 -- Startup hook
@@ -309,6 +341,8 @@ myAdditKeys =
   ,("<XF86MonBrightnessDown>", spawn "lux -s 10%")
   ,("<Print>", spawn "flameshot gui")
   ,("M-v", spawn "copyq toggle")
+  ,("M-p", shellPrompt myXPromptConfig)
+  ,("M-C-o", orgPrompt def "TODO" "~/todos.org")
   -- Add more here
   ]
 
@@ -321,6 +355,7 @@ myAdditKeys =
 --
 
 main = do
+  
   xmproc <- spawnPipe "~/.fehbg"
   xmproc <- spawnPipe "picom"
   --xmproc <- spawnPipe "xmobar"
@@ -331,7 +366,6 @@ main = do
     { keys = \c -> volumeKeys c `M.union` keys defaults c
     }
     `additionalKeysP` myAdditKeys
-    
 
 -- A structure containing your configuration settings, overriding
 -- fields in the default config. Any you don't override, will
