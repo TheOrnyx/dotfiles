@@ -1,5 +1,7 @@
 ;;; .emacs --- My Emacs Config File
 
+
+
 ;; Author: Zaki Si-Lounis <cthulhu345@gmail.com>
 
 ;;TODO
@@ -78,8 +80,6 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defvar *using-eglot* t) ;using eglot
 (defvar *lsp-mode-enabled* nil) ;using lsp-mode
-(defvar *using-ivy* nil) ;using ivy
-(defvar *using-company* nil)
 (defvar *using-corfu* t)
 (defvar *using-vertico* t)
 (defvar *using-projectile* t)
@@ -97,21 +97,6 @@
   :config
   (setq doom-modeline-support-imenu t)
   (setq doom-modeline-battery t))
-
-(use-package dashboard
-  :config
-  (setq dashboard-startup-banner 3)
-  (setq dashboard-center-content t)
-  (setq dashboard-icon-type 'all-the-icons) ;; use `all-the-icons' package
-  (setq dashboard-display-icons-p t) ;; display icons on both GUI and terminal
-  (setq dashboard-projects-backend 'project-el)
-  ;(setq dashboard-projects-switch-function 'counsel-projectile-switch-project-by-name)
-  (setq dashboard-items '((recents . 10)
-	                  (projects . 5)
-	                  (bookmarks . 5)
-			  (registers . 5)
-			  (agenda . 5))))
-  ;; (dashboard-setup-startup-hook))
 
 (use-package dracula-theme)
 ;---------------------------------------------------------
@@ -132,13 +117,14 @@
 (setq-default inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
 
-
-(setq recentf-max-saved-items 60)
+(recentf-mode 1)
+(setq recentf-max-saved-items 100)
+(run-at-time nil (* 5 60) 'recentf-save-list)
 (global-set-key (kbd "C-x C-r") 'recentf)
 
 (global-set-key (kbd "C-x C-b") 'ibuffer)
 ;(semantic-mode 1)
-(global-set-key [remap dabbrev-expand] 'hippie-expand) ;Rebind to use hippie-expand 
+(global-set-key [remap dabbrev-expand] 'hippie-expand) ;Rebind to use hippie-expand
 (winner-mode 1)
 (setq confirm-kill-emacs #'yes-or-no-p) ;;Confirm exist
 (setq shell-file-name "/bin/sh") ;; Fixes ripgrep issues
@@ -389,10 +375,10 @@
 ;; DIRED stuff ;;
 ;;;;;;;;;;;;;;;;;
 
-(use-package dirvish
-  ;:init (dirvish-override-dired-mode)
-  :config
-  (global-set-key (kbd "C-x D") 'dirvish-dwim)) ;maybe replace with just dirvish
+;; (use-package dirvish
+;;   ;:init (dirvish-override-dired-mode)
+;;   :config
+;;   (global-set-key (kbd "C-x D") 'dirvish-dwim)) ;maybe replace with just dirvish
 
 (use-package dired-filter)
 
@@ -476,6 +462,11 @@
 
 ;; Corfu ;;
 (when *using-corfu*
+  (unless (display-graphic-p)
+    (use-package corfu-terminal
+      :init (corfu-terminal-mode 1)))
+  
+  
   (use-package corfu
     :custom
     (corfu-cycle t)                 ; Allows cycling through candidates
@@ -489,6 +480,7 @@
     (corfu-min-width 55)
     (corfu-max-width corfu-min-width)       ; Always have the same width
     (corfu-count 14)
+    
     :init
     (global-corfu-mode)
     (corfu-history-mode)
@@ -507,26 +499,6 @@
   :config
   (add-to-list 'corfu-margin-formatters #'kind-icon-margin-formatter)) ; Enable `kind-icon')
 
-
-;; Company ;;
-
-(when *using-company*
-  (use-package company
-    :config
-    (add-hook 'after-init-hook 'global-company-mode)
-    (setq company-minimum-prefix-length 1)
-    (setq company-idle-delay 0.0)) ;;probably tweak these
-
-  (use-package company-quickhelp
-    :config (company-quickhelp-mode)
-    (setq company-quickhelp-delay 0))
-
-  (use-package company-box
-    :hook (company-mode . company-box-mode)
-    :config (setq company-box-icons-alist 'company-box-icons-all-the-icons)
-    (setq company-tooltip-minimum-width 60)
-    (setq company-tooltip-minimum 10)))
-
 ;; Cape ;;
 (use-package cape
   :defer 10
@@ -542,8 +514,8 @@
   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
 ;---------------------------------------------------------
-;;
-;;;;;;;;;;;;;;;;;;
+
+;;;;;;;;;;;;;;;;;;;;
 ;; Vertico Config ;;
 ;;;;;;;;;;;;;;;;;;;;
 
@@ -553,7 +525,10 @@
     :config
     (setq vertico-count 20)
     (setq vertico-resize t)
-    (setq vertico-cycle t))
+    (setq vertico-cycle t)
+    (setq read-file-name-completion-ignore-case t
+	  read-buffer-completion-ignore-case t
+	  completion-ignore-case t))
   
   (use-package marginalia
     :after vertico
@@ -575,6 +550,7 @@
     :custom
     (completion-styles '(orderless basic))
     (completion-category-overrides '((file (styles basic partial-completion)))))
+  
   
   (use-package consult ;probably revise this
     :bind (;; C-c bindings in `mode-specific-map'
@@ -658,7 +634,7 @@
      ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings')
 
     :init
-    (add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+    ;(add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
     :config
     ;; Hide the mode line of the Embark live/completions buffers
     (add-to-list 'display-buffer-alist
@@ -675,49 +651,6 @@
     (setq enable-recursive-minibuffers t)))
 
 ;---------------------------------------------------------
-;;;;;;;;;;;;;;;
-;; IVY stuff ;;
-;;;;;;;;;;;;;;;
-
-(when *using-ivy*
-  (use-package ivy
-    :config
-    (ivy-mode 1)
-    (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-    (setq ivy-height 20)) ;probs tweak a bit
-
-  (use-package ivy-rich
-    :after (ivy counsel)
-    :init
-    (ivy-rich-mode 1))
-
-  (use-package all-the-icons-ivy
-    :init (add-hook 'after-init-hook 'all-the-icons-ivy-setup))
-
-  (use-package counsel
-    :after (ivy)
-    :config
-    (counsel-mode 1))
-
-  (use-package ivy-prescient
-    :after (prescient ivy counsel)
-    :config
-    (setq ivy-prescient-sort-commands
-          '(:not swiper
-		 counsel-grep
-		 counsel-rg
-		 counsel-projectile-rg
-		 ivy-switch-buffer
-		 counsel-switch-buffer))
-    (setq ivy-prescient-retain-classic-highlighting t)
-    (ivy-prescient-mode +1))
-
-  (use-package company-prescient
-    :after (prescient company)
-    :config
-    (company-prescient-mode +1)))
-
-
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -729,11 +662,12 @@
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(isearch-lazy-count t)
  '(package-selected-packages
-   '(yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(company-prescient ivy-prescient all-the-icons-ivy ivy-rich sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(corfu-default ((t (:background "#461D4E")))))
-;;; filename ends here
+
+;;; .emacs ends here
