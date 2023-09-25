@@ -8,6 +8,7 @@
 --
 
 import XMonad
+import XMonad.Actions.CycleWS
 import Data.Monoid
 import System.Exit
 import XMonad.Layout.Spacing
@@ -343,6 +344,8 @@ myAdditKeys =
   ,("M-v", spawn "copyq toggle")
   ,("M-p", shellPrompt myXPromptConfig)
   ,("M-C-o", orgPrompt def "TODO" "~/todos.org")
+  ,("M-<Right>", nextWS)
+  ,("M-<Left>", prevWS)
   -- Add more here
   ]
 
