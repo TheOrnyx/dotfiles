@@ -114,6 +114,11 @@
 ;;     )
 ;;   )
 
+(defun open-terminal-here ()
+  "Opens an alacritty session with the current directory set"
+  (interactive)
+  (call-process "alacritty" nil 0 nil "--working-directory" default-directory))
+
 (setq-default inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
 
@@ -391,6 +396,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
+(use-package ggtags)
 
 (use-package yaml-mode)
 
@@ -662,7 +668,7 @@
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(isearch-lazy-count t)
  '(package-selected-packages
-   '(company-prescient ivy-prescient all-the-icons-ivy ivy-rich sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult company color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
