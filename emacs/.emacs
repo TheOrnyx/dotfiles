@@ -105,6 +105,9 @@
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(pixel-scroll-mode 1)
+(pixel-scroll-precision-mode 1)
+
 ;finish this later
 ;; (defun kill-remove-whitespace ()
 ;;   "kill item and remove trailing whitespace from it"
@@ -264,6 +267,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extra Misc Packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;;VTERM
+(use-package vterm
+  :config
+  (setq vterm-shell "/bin/fish"))
 
 ;;TOML
 (use-package toml-mode)
