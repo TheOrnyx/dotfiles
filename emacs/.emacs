@@ -105,8 +105,25 @@
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(setq ispell-program-name "hunspell")
+(setq ispell-dictionary "en_NZ")
+
+(setq image-use-external-converter 1)
+(setq backup-directory-alist '(("." . "~/.backups/emacs/")))
+(column-number-mode 1)
+
+(defun my-pixel-scroll-hook ()
+  "some stuff for pixel scrolling"
+  (global-set-key [remap scroll-up-command] 'pixel-scroll-interpolate-down)
+  (global-set-key [remap scroll-down-command] 'pixel-scroll-interpolate-up)
+  (setq pixel-scroll-precision-large-scroll-height nil)
+  (setq pixel-scroll-precision-momentum-tick 0.5)
+  (setq pixel-scroll-precision-interpolate-page 1))
+
+(add-hook 'pixel-scroll-mode-hook 'my-pixel-scroll-hook)
 (pixel-scroll-mode 1)
 (pixel-scroll-precision-mode 1)
+
 
 ;finish this later
 ;; (defun kill-remove-whitespace ()
@@ -121,6 +138,11 @@
   "Opens an alacritty session with the current directory set"
   (interactive)
   (call-process "alacritty" nil 0 nil "--working-directory" default-directory))
+
+(defun open-nemo-here ()
+  "Opens nemo aka my file manager at the current directory"
+  (interactive)
+  (call-process "nemo" nil 0 nil default-directory))
 
 (setq-default inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
@@ -140,7 +162,7 @@
 (setq auth-sources '("~/.authinfo.gpg")) ;; Sets authinfo file to gpg one
 
 (setq save-interprogram-paste-before-kill t)
-(setq pixel-scroll-precision-large-scroll-height 40.0)
+
 
 (defun kill-buffer-path ()
   "Copy the current buffer path."
@@ -186,6 +208,9 @@
 
 (setq org-log-done t)
 
+(use-package ox-moderncv
+  :load-path "~/.emacs.d/extra/org-cv/"
+  :init (require 'ox-moderncv))
 
 (add-hook 'text-mode-hook #'flyspell-mode)
 (use-package ox-hugo
@@ -407,6 +432,19 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
+
+(use-package gnuplot)
+(use-package gnuplot-mode)
+
+(defun my-java-hook ()
+  "Custom settings for java programming"
+  (interactive)
+  (setq indent-tabs-mode nil
+	tab-width 4
+	c-basic-offset 4))
+
+(add-hook 'java-mode-hook 'my-java-hook)
+
 (use-package julia-mode)
 
 (use-package vterm)
@@ -463,6 +501,8 @@
 (when *using-eglot*
   (use-package eglot-java)
   (add-hook 'java-mode-hook 'eglot-java-mode)
+  (add-hook 'java-mode-hook (lambda ()
+			      (setq eglot-report-progress nil)))
   (add-hook 'c++-mode-hook 'eglot-ensure)
   (add-hook 'processing-mode 'eglot-ensure))
 
@@ -685,7 +725,7 @@
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(isearch-lazy-count t)
  '(package-selected-packages
-   '(vterm julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(info-colors gnuplot-mode gnuplot form-feed vterm julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
