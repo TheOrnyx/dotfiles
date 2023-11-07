@@ -57,6 +57,7 @@
 	(haskell "https://github.com/tree-sitter/tree-sitter-haskell")
 	(ruby "https://github.com/tree-sitter/tree-sitter-ruby")
 	(cmake "https://github.com/uyha/tree-sitter-cmake")
+	(gomod "https://github.com/camdencheek/tree-sitter-go-mod")
 	(css "https://github.com/tree-sitter/tree-sitter-css")
 	(elisp "https://github.com/Wilfred/tree-sitter-elisp")
 	(go "https://github.com/tree-sitter/tree-sitter-go")
@@ -105,6 +106,7 @@
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+(setq tab-width 4)
 (setq ispell-program-name "hunspell")
 (setq ispell-dictionary "en_NZ")
 
@@ -293,11 +295,6 @@
 ;; Extra Misc Packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
-;;VTERM
-(use-package vterm
-  :config
-  (setq vterm-shell "/bin/fish"))
-
 ;;TOML
 (use-package toml-mode)
 
@@ -433,6 +430,8 @@
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
+(use-package go-mode)
+
 (use-package gnuplot)
 (use-package gnuplot-mode)
 
@@ -445,11 +444,12 @@
 
 (add-hook 'java-mode-hook 'my-java-hook)
 
-(use-package julia-mode)
+(defun my-go-hook ()
+  "My custom settings for go"
+  (setq tab-width 4)
+  )
 
-(use-package vterm)
-
-(use-package julia-snail)
+(add-hook 'go-mode-hook 'my-go-hook)
 
 (use-package ggtags)
 
@@ -725,7 +725,7 @@
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(isearch-lazy-count t)
  '(package-selected-packages
-   '(info-colors gnuplot-mode gnuplot form-feed vterm julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed vterm julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

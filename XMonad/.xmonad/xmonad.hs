@@ -30,7 +30,6 @@ import XMonad.Prompt.OrgMode
 
 --Layouts
 import XMonad.Layout.BinarySpacePartition
-
 import qualified XMonad.StackSet as W
 import qualified Data.Map        as M
 import Data.Attoparsec.ByteString.Char8 (space)
