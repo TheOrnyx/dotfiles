@@ -430,6 +430,14 @@
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
+(defun my-prog-hook ()
+  "Custom settings for prog modes"
+  (interactive)
+  (hl-todo-mode 1)
+  )
+
+(add-hook 'prog-mode-hook 'my-prog-hook)
+
 (use-package go-mode)
 
 (use-package gnuplot)
