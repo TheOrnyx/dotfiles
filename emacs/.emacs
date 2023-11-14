@@ -430,6 +430,9 @@
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
+(add-to-list 'auto-mode-alist '("\\.vs\\'" . glsl-mode))
+(add-to-list 'auto-mode-alist '("\\.fs\\'" . glsl-mode))
+
 (defun my-prog-hook ()
   "Custom settings for prog modes"
   (interactive)
