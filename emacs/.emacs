@@ -242,7 +242,8 @@
 
 (use-package undo-tree
   :config (global-undo-tree-mode)
-  (setq undo-tree-auto-save-history t))
+  (setq undo-tree-auto-save-history t)
+  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
 
 (use-package org-view-mode)
 (use-package org-modern
@@ -433,6 +434,10 @@
 (add-to-list 'auto-mode-alist '("\\.vs\\'" . glsl-mode))
 (add-to-list 'auto-mode-alist '("\\.fs\\'" . glsl-mode))
 
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+	       '(glsl-mode . ("glslls" "--stdin"))))
+
 (defun my-prog-hook ()
   "Custom settings for prog modes"
   (interactive)
@@ -508,6 +513,7 @@
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
 	       '(processing-mode . ("~/processing-4.3/processing-lsp" "--stdio"))))
+
 
 (when *using-eglot*
   (use-package eglot-java)
