@@ -160,6 +160,9 @@
 (winner-mode 1)
 (setq confirm-kill-emacs #'yes-or-no-p) ;;Confirm exist
 (setq shell-file-name "/bin/sh") ;; Fixes ripgrep issues
+
+(require 'epa-file)
+(epa-file-enable)
 (setq epg-gpg-program "gpg2")
 (setq auth-sources '("~/.authinfo.gpg")) ;; Sets authinfo file to gpg one
 
@@ -267,6 +270,14 @@
 
 ;;Mail
 (use-package notmuch)
+
+(defun my-writing-hook ()
+  "My hook for writing modes (mostly org mode)"
+  (setq fill-column 80)
+  (auto-fill-mode 1)
+  )
+
+(add-hook 'org-mode-hook 'my-writing-hook)
 
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;;
@@ -557,7 +568,7 @@
     (corfu-preview-current 'insert) ; Do not preview current candidate
     (corfu-preselect 'prompt)
     (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
-    (corfu-min-width 55)
+    (corfu-min-width 70)
     (corfu-max-width corfu-min-width)       ; Always have the same width
     (corfu-count 14)
     
@@ -581,6 +592,7 @@
 
 ;; Cape ;;
 (use-package cape
+  :after corfu
   :defer 10
   :bind ("C-c f" . cape-file)
   :init
@@ -707,6 +719,8 @@
 
   (use-package consult-eglot)
 
+  (use-package consult-todo)
+
   (use-package embark
     :bind
     (("C-." . embark-act)         ;; pick some comfortable binding
@@ -742,7 +756,7 @@
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(isearch-lazy-count t)
  '(package-selected-packages
-   '(glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed vterm julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(consult-todo eglot glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed vterm julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
