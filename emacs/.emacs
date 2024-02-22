@@ -31,6 +31,8 @@
 (require 'package)
 (add-to-list 'package-archives '("gnu"   . "https://elpa.gnu.org/packages/"))
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/"))
+(add-to-list 'package-archives '("nongnu" . "https://elpa.nongnu.org/nongnu/"))
+
 (package-initialize)
 
 (unless (package-installed-p 'use-package)
@@ -100,6 +102,33 @@
   (setq doom-modeline-battery t))
 
 (use-package dracula-theme)
+
+;; Transparency stuff
+(set-frame-parameter nil 'alpha-background 95)
+(add-to-list 'default-frame-alist '(alpha-background . 95))
+;---------------------------------------------------------
+
+;;;;;;;;;;;;;;;;;;;;;
+;; Custom Keybinds ;;
+;;;;;;;;;;;;;;;;;;;;;
+
+(global-set-key (kbd "C-x C-r") 'recentf)
+(global-set-key (kbd "C-x C-b") 'ibuffer)
+(global-set-key [remap dabbrev-expand] 'hippie-expand) ;Rebind to use hippie-expand
+(global-set-key (kbd "M-z") 'zap-up-to-char)
+(global-set-key (kbd "C-M-z") 'zap-to-char)
+(global-set-key (kbd "M-Z") 'zap-to-char)
+(global-set-key (kbd "M-i") 'imenu)				;;Binding for imenu
+
+(add-hook 'dired-mode-hook
+		  (lambda ()
+			(local-set-key (kbd "<return>") 'dired-find-alternate-file)  ;; Single buffer for opening dired buffers
+			(define-key dired-mode-map (kbd "^")
+						(lambda () (interactive) (find-alternate-file ".."))))) ;; single buffer for going up
+
+(with-eval-after-load "eglot" ;; Eglot keybindings
+  (global-set-key (kbd "C-c C-l r") 'eglot-rename)
+  )
 ;---------------------------------------------------------
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -126,16 +155,6 @@
 (pixel-scroll-mode 1)
 (pixel-scroll-precision-mode 1)
 
-
-;finish this later
-;; (defun kill-remove-whitespace ()
-;;   "kill item and remove trailing whitespace from it"
-;;   (interactive)
-  
-;;   (let (killed-item (kill-line))
-;;     )
-;;   )
-
 (defun open-terminal-here ()
   "Opens an alacritty session with the current directory set"
   (interactive)
@@ -150,15 +169,11 @@
 (setq inhibit-splash-screen t)
 
 (recentf-mode 1)
-(setq recentf-max-saved-items 100)
+(setq recentf-max-saved-items 200)
 (run-at-time nil (* 5 60) 'recentf-save-list)
-(global-set-key (kbd "C-x C-r") 'recentf)
 
-(global-set-key (kbd "C-x C-b") 'ibuffer)
-;(semantic-mode 1)
-(global-set-key [remap dabbrev-expand] 'hippie-expand) ;Rebind to use hippie-expand
 (winner-mode 1)
-(setq confirm-kill-emacs #'yes-or-no-p) ;;Confirm exist
+(setq confirm-kill-emacs #'yes-or-no-p) ;;Confirm exits
 (setq shell-file-name "/bin/sh") ;; Fixes ripgrep issues
 
 (require 'epa-file)
@@ -174,9 +189,6 @@
   (interactive)
   (kill-new (buffer-file-name)))
 
-(set-frame-parameter nil 'alpha-background 95)
-(add-to-list 'default-frame-alist '(alpha-background . 95))
-(set-frame-parameter nil 'cursor-color "coral")
 (setq display-battery-mode 1)
 (setq calendar-week-start-day 1)
 (display-time-mode 1)
@@ -184,24 +196,17 @@
 
 (setq zone-when-idle 120)
 (add-to-list 'load-path "~/.emacs.d/extra/")
-(global-set-key (kbd "M-z") 'zap-up-to-char)
-(global-set-key (kbd "C-M-z") 'zap-to-char)
-(global-set-key (kbd "M-Z") 'zap-to-char)
 
 (setq next-line-add-newlines t)
 (setq gc-cons-threshold 1600000)
-(global-set-key (kbd "M-i") 'imenu)				;;Binding for imenu
+
 (setq inferior-lisp-program "sbcl")				;;set the common lisp to SBCL
 (tool-bar-mode -1)						;; remove the tool bar
 (setq undo-limit 240000)					;; Change the undo limit to 240000 bytes - might need tweaking
 
-(setq org-support-shift-select t)
-(setq org-image-actual-width 400)
 (setq gc-cons-threshold 50000000)
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))    ;; Maximize on startup
 (setq initial-frame-alist default-frame-alist)
-;(setq read-process-output-max (* 1024 1024)) ;; reenable if problems
-;(setq gc-cons-threshold 1600000)
 
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode 1)
@@ -212,10 +217,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (setq org-log-done t)
-
-(use-package ox-moderncv
-  :load-path "~/.emacs.d/extra/org-cv/"
-  :init (require 'ox-moderncv))
+(setq org-support-shift-select t)
+(setq org-image-actual-width 400)
 
 (add-hook 'text-mode-hook #'flyspell-mode)
 (use-package ox-hugo
@@ -243,19 +246,13 @@
   :init (require 'smartparens-config)
   :config (add-hook 'prog-mode-hook #'smartparens-mode))
 
-(use-package undo-tree
-  :config (global-undo-tree-mode)
-  (setq undo-tree-auto-save-history t)
-  (setq undo-tree-history-directory-alist '(("." . "~/.emacs.d/undo"))))
-
 (use-package org-view-mode)
 (use-package org-modern
   :config
   (add-hook 'org-mode-hook #'org-modern-mode)
   (add-hook 'org-agenda-finalize-hook #'org-modern-agenda))
 (use-package org-download
-  :config (add-hook 'dired-mode-hook 'org-download-enable)
-  (setq-default org-download-image-dir "~/Pictures/foo"))
+  :config (add-hook 'dired-mode-hook 'org-download-enable))
 
 (use-package org-roam
   :init
@@ -268,8 +265,6 @@
   :config
   (org-roam-setup))
 
-;;Mail
-(use-package notmuch)
 
 (defun my-writing-hook ()
   "My hook for writing modes (mostly org mode)"
@@ -338,13 +333,6 @@
   (define-fringe-bitmap 'git-gutter-fr:modified [224] nil nil '(center repeated))
   (define-fringe-bitmap 'git-gutter-fr:deleted [128 192 224 240] nil nil 'bottom))
 
-;;Beacon Mode
-(use-package beacon
-  :config
-  ;(beacon-mode 1)
-  (setq beacon-size 40)
-  (setq beacon-blink-duration 1))
-
 (use-package format-all)
 
 (use-package ialign
@@ -355,12 +343,6 @@
   :config
   (setq sr-speedbar-right-side nil)
   (global-set-key (kbd "C-c t") 'sr-speedbar-toggle))
-
-(use-package projectile
-  :init
-  (projectile-mode +1)
-  :bind (:map projectile-mode-map
-	      ("C-c p" . projectile-command-map)))
 
 (use-package which-key
   :config
@@ -417,18 +399,10 @@
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
 
-(use-package ctrlf
-  :config) ;(ctrlf-mode nil))
-
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;
 ;; DIRED stuff ;;
 ;;;;;;;;;;;;;;;;;
-
-;; (use-package dirvish
-;;   ;:init (dirvish-override-dired-mode)
-;;   :config
-;;   (global-set-key (kbd "C-x D") 'dirvish-dwim)) ;maybe replace with just dirvish
 
 (use-package dired-filter)
 
@@ -455,6 +429,11 @@
   (hl-todo-mode 1)
   )
 
+;; DAPE MODE
+(use-package dape
+  :config
+  (setq dape-cwd-fn 'projectile-project-root))
+
 (add-hook 'prog-mode-hook 'my-prog-hook)
 
 (use-package go-mode)
@@ -468,14 +447,12 @@
   (setq indent-tabs-mode nil
 	tab-width 4
 	c-basic-offset 4))
-
 (add-hook 'java-mode-hook 'my-java-hook)
 
 (defun my-go-hook ()
   "My custom settings for go"
   (setq tab-width 4)
   )
-
 (add-hook 'go-mode-hook 'my-go-hook)
 
 (use-package ggtags)
@@ -545,6 +522,12 @@
 (use-package hl-todo)
 (use-package flycheck-hl-todo
   :after (hl-todo))
+
+(use-package eldoc-box
+  :config
+  (eldoc-box-hover-mode 1)
+  (eldoc-box-hover-at-point-mode 1)
+  (setq eldoc-box-only-multi-line 1))
 
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -756,7 +739,7 @@
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(isearch-lazy-count t)
  '(package-selected-packages
-   '(consult-todo eglot glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed vterm julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico undo-tree sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -765,3 +748,4 @@
  '(corfu-default ((t (:background "#461D4E")))))
 
 ;;; .emacs ends here
+(put 'dired-find-alternate-file 'disabled nil)
