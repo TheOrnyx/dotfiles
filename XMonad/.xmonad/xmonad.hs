@@ -16,7 +16,7 @@ import XMonad.Util.Run
 import XMonad.Hooks.ManageDocks
 import Graphics.X11.ExtraTypes.XF86
 import XMonad.Util.EZConfig
-import XMonad.Util.Ungrab
+import XMonad.Operations
 import XMonad.Hooks.EwmhDesktops
 import XMonad.Hooks.DynamicLog
 import XMonad.Hooks.StatusBar
