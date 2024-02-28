@@ -126,9 +126,9 @@
 			(define-key dired-mode-map (kbd "^")
 						(lambda () (interactive) (find-alternate-file ".."))))) ;; single buffer for going up
 
-(with-eval-after-load "eglot" ;; Eglot keybindings
-  (global-set-key (kbd "C-c C-l r") 'eglot-rename)
-  )
+;; eglot keybinds
+(keymap-set eglot-mode-map (kbd "C-c C-e r") 'eglot-rename)
+(keymap-set eglot-mode-map (kbd "C-c C-e a") 'eglot-code-actions)
 ;---------------------------------------------------------
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,6 +142,13 @@
 (setq image-use-external-converter 1)
 (setq backup-directory-alist '(("." . "~/.backups/emacs/")))
 (column-number-mode 1)
+
+(require 'ansi-color)
+(defun colorize-compilation-buffer ()
+  "apply ansi-color to the compilation buffer"
+  (ansi-color-apply-on-region compilation-filter-start (point))
+  )
+(add-hook 'compilation-filter-hook 'colorize-compilation-buffer)
 
 (defun my-pixel-scroll-hook ()
   "some stuff for pixel scrolling"
@@ -182,7 +189,7 @@
 (setq auth-sources '("~/.authinfo.gpg")) ;; Sets authinfo file to gpg one
 
 (setq save-interprogram-paste-before-kill t)
-
+(setq eldoc-idle-delay 0.5)
 
 (defun kill-buffer-path ()
   "Copy the current buffer path."
@@ -265,6 +272,11 @@
   :config
   (org-roam-setup))
 
+(defun my-org-hook ()
+  "My hook for org mode stuff"
+  (setq org-indent-mode 1)
+  )
+(add-hook 'org-mode-hook 'my-org-hook)
 
 (defun my-writing-hook ()
   "My hook for writing modes (mostly org mode)"
@@ -273,6 +285,16 @@
   )
 
 (add-hook 'org-mode-hook 'my-writing-hook)
+
+;; Syntax highlighting and stuff
+(require 'ox-latex)
+(add-to-list 'org-latex-packages-alist '("" "minted"))
+(setq org-latex-listings 'minted)
+
+(setq org-latex-pdf-process
+      '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;;
@@ -422,11 +444,17 @@
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
 	       '(glsl-mode . ("glslls" "--stdin"))))
+  ;; (add-to-list 'eglot-server-programs
+  ;;              `((java-mode java-ts-mode) .
+  ;; 		 ("jdtls"
+  ;;                 :initializationOptions
+  ;;                 (:bundles ["/usr/share/java-debug/com.microsoft.java.debug.plugin/target/com.microsoft.java.debug.plugin-0.51.1.jar"])))))
 
 (defun my-prog-hook ()
   "Custom settings for prog modes"
   (interactive)
   (hl-todo-mode 1)
+  (eldoc-box-hover-at-point-mode 1)
   )
 
 ;; DAPE MODE
@@ -525,9 +553,8 @@
 
 (use-package eldoc-box
   :config
-  (eldoc-box-hover-mode 1)
-  (eldoc-box-hover-at-point-mode 1)
-  (setq eldoc-box-only-multi-line 1))
+  ;; (setq eldoc-box-hover-mode 1)
+  (setq eldoc-box-hover-at-point-mode 1))
 
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -711,7 +738,7 @@
      ("C-h B" . embark-bindings)) ;; alternative for `describe-bindings')
 
     :init
-    ;(add-hook 'eldoc-documentation-functions #'embark-eldoc-first-target)
+    ;(add-hook '-documentation-functions #'embark-eldoc-first-target)
     :config
     ;; Hide the mode line of the Embark live/completions buffers
     (add-to-list 'display-buffer-alist
@@ -737,9 +764,10 @@
  '(custom-enabled-themes '(dracula))
  '(custom-safe-themes
    '("8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
+ '(eldoc-echo-area-use-multiline-p t)
  '(isearch-lazy-count t)
  '(package-selected-packages
-   '(eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia iedit ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
