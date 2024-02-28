@@ -127,8 +127,8 @@
 						(lambda () (interactive) (find-alternate-file ".."))))) ;; single buffer for going up
 
 ;; eglot keybinds
-(keymap-set eglot-mode-map (kbd "C-c C-e r") 'eglot-rename)
-(keymap-set eglot-mode-map (kbd "C-c C-e a") 'eglot-code-actions)
+(keymap-set eglot-mode-map "C-c C-e r" 'eglot-rename)
+(keymap-set eglot-mode-map "C-c C-e a" 'eglot-code-actions)
 ;---------------------------------------------------------
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
