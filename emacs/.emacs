@@ -8,7 +8,7 @@
 ;; possibly switch to init.el
 ;; ELECTRIC MODE PARENTHESIS BLAHHHH
 ;; Probably switch around my use-package to use hooks and stuff to improve load time.
-
+;; Switch to an ORG file for easy reading and sorting OR switch stuff into seperate files
 
 ;;; Code:
 (setq gc-cons-threshold (* 50 1000 1000)) ;; set garbage collection high at beginning
@@ -669,6 +669,12 @@
   "My custom settings for go"
   (setq tab-width 4))
 (add-hook 'go-mode-hook 'my-go-hook)
+
+(defun set-go-wasm-env ()
+  "Set the environment variables GOOS and GOARCH to properly program with JS and WASM"
+  (interactive)
+  (setenv "GOOS" "js")
+  (setenv "GOARCH" "wasm"))
 
 ;---------------------------------------------------------
 
