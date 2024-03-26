@@ -64,7 +64,9 @@
   :config
   (doom-modeline-mode 1)
   (setq doom-modeline-support-imenu t)
-  (setq doom-modeline-battery t))
+  (setq doom-modeline-battery t)
+  (setq doom-modeline-lsp-icon t)
+  )
 
 (use-package dracula-theme)
 
@@ -104,6 +106,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq doc-view-resolution 400) ;; better pdf resolution
 
 (setq ispell-program-name "hunspell")
 (setq ispell-dictionary "en_NZ")
@@ -271,6 +275,8 @@
     (completion-styles '(orderless basic))
     (completion-category-overrides '((file (styles basic partial-completion)))))
 
+  (use-package consult-flycheck)
+
   ;; Consult
   (use-package consult ;probably revise this
     :bind (;; C-c bindings in `mode-specific-map'
@@ -296,7 +302,7 @@
            ("M-y" . consult-yank-pop)                ;; orig. yank-pop
            ;; M-g bindings in `goto-map'
            ("M-g e" . consult-compile-error)
-           ("M-g f" . consult-flymake)               ;; Alternative: consult-flycheck
+           ("M-g f" . consult-flycheck)               ;; Alternative: consult-flycheck
            ("M-g g" . consult-goto-line)             ;; orig. goto-line
            ("M-g M-g" . consult-goto-line)           ;; orig. goto-line
            ("M-g o" . consult-outline)               ;; Alternative: consult-org-heading
@@ -676,6 +682,13 @@
   (setenv "GOOS" "js")
   (setenv "GOARCH" "wasm"))
 
+(defun my-c-hook ()
+  "My hook for C and C++ programming."
+  (setq tab-width 2)
+  (c-set-style "k&r")
+  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
+(add-hook 'c-mode-hook 'my-c-hook)
+
 ;---------------------------------------------------------
 
 (custom-set-variables
@@ -691,14 +704,15 @@
  '(eldoc-echo-area-use-multiline-p t)
  '(isearch-lazy-count t)
  '(package-selected-packages
-   '(magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(corfu-border ((t (:background "gray33"))))
- '(corfu-default ((t nil))))
+ '(corfu-default ((t nil)))
+ '(eldoc-box-body ((t (:background "#282a36")))))
 
 ;;; .emacs ends here
 (put 'dired-find-alternate-file 'disabled nil)
