@@ -35,8 +35,8 @@
 ;; Transparency stuff
 (add-to-list 'initial-frame-alist '(fullscreen . maximized))    ;; Maximize on startup
 (setq initial-frame-alist default-frame-alist)
-(set-frame-parameter nil 'alpha-background 95)
-(add-to-list 'default-frame-alist '(alpha-background . 95))
+(set-frame-parameter nil 'alpha-background 99)
+(add-to-list 'default-frame-alist '(alpha-background . 99))
 (tool-bar-mode -1) ;; remove the tool bar
 
 ;; Package setup
