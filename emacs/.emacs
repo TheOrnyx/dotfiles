@@ -90,11 +90,17 @@
 (global-set-key (kbd "M-Z") 'zap-to-char)
 (global-set-key (kbd "M-i") 'imenu)				;;Binding for imenu
 
+(global-set-key (kbd "C-c a") 'org-agenda)
+
 (add-hook 'dired-mode-hook
 		  (lambda ()
 			(local-set-key (kbd "<return>") 'dired-find-alternate-file)  ;; Single buffer for opening dired buffers
 			(define-key dired-mode-map (kbd "^")
 						(lambda () (interactive) (find-alternate-file ".."))))) ;; single buffer for going up
+
+;; Stop the stupid suspend-emacs bind
+(global-set-key (kbd "C-z") (lambda () (interactive)
+			      (message-box "Good one dumbass, if I hadn't fixed this it would've suspended the frame clown")))
 
 ;; eglot keybinds
 (with-eval-after-load 'eglot
@@ -107,7 +113,7 @@
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-(setq doc-view-resolution 400) ;; better pdf resolution
+(setq doc-view-resolution 100) ;; better pdf resolution
 
 (setq ispell-program-name "hunspell")
 (setq ispell-dictionary "en_NZ")
@@ -183,6 +189,9 @@
 
 ;; Magit
 (use-package magit)
+
+;; Ripgrep
+(use-package rg)
 
 ;; Corfu ;;
 (when *using-corfu*
@@ -703,8 +712,10 @@
  '(elcord-use-major-mode-as-main-icon t)
  '(eldoc-echo-area-use-multiline-p t)
  '(isearch-lazy-count t)
+ '(org-agenda-files
+   '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(journalctl-mode rg stumpwm-mode consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
