@@ -46,14 +46,14 @@
 ;; Colors and general appearance stuff!!
 ; All the color
 (setq *colors*
-      `(,*color-background*   ;; 0 black
-	,*color-red*  ;; 1 red
-	,*color-green*  ;; 2 green
-	,*color-yellow*  ;; 3 yellow
-	,*color-purple*  ;; 4 blue
-	,*color-pink*  ;; 5 magenta
-	,*color-cyan*   ;; 6 cyan
-	,*color-foreground*)) ;; 7 white
+      `(,*color-background*	;; 0 black
+	,*color-red*		;; 1 red
+	,*color-green*		;; 2 green
+	,*color-yellow*		;; 3 yellow
+	,*color-purple*		;; 4 blue
+	,*color-pink*		;; 5 magenta
+	,*color-cyan*		;; 6 cyan
+	,*color-foreground*))	;; 7 white
 
 ; Message and input window stuff
 (setf stumpwm:*input-window-gravity*     :top-right
@@ -113,9 +113,8 @@
 (stumpwm:run-shell-command "copyq")
 
 ;; Basic behaviour stuff
-(setf *mouse-focus-policy* :sloppy) ;; Make it so I can hover mouse to change stuff
+(setf *mouse-focus-policy* :click) ;; Make it so I can hover mouse to change stuff
 (setf *input-history-ignore-duplicates* t) ;; Avoid repeats in history
-(stumpwm:which-key-mode)
 
 ;; functions for floating and toggle always on top to prevent glitchiness
 (defcommand float-raise-this () ()
@@ -144,7 +143,7 @@
 
 ;; Send raw key and a raw C-t key bind so I can use new tab easily (kinda gross)
 (define-key *root-map* (kbd "C-q") "send-raw-key")
-(define-key *top-map* (kbd "s-t") "send-raw-key")
+(define-key *top-map* (kbd "s-t") "send-escape")
 
 ;; Keys to float things
 (define-key *root-map* (kbd "f") "float-raise-this")
@@ -173,4 +172,5 @@
 (when stumpwm:*initializing*
   ;; (swm-gaps:toggle-gaps)
   (update-color-map (current-screen))
-  (init-load-path *module-dir*))
+  (init-load-path *module-dir*)
+  (stumpwm:which-key-mode))
