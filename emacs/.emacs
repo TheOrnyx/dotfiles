@@ -365,7 +365,8 @@
   (use-package consult-projectile
     :after (consult projectile)
     :bind
-    (("C-c p f" . consult-projectile-find-file)))
+    (("C-c p f" . consult-projectile-find-file)
+     ("C-c p p" . consult-projectile-switch-project)))
 
   (use-package consult-todo)
 
@@ -411,7 +412,8 @@
   (setq fill-column 80)
   (auto-fill-mode 1)
   (flyspell-mode 1)
-  (setq corfu-auto-delay 0.5))
+  (setq-local corfu-auto-delay 0.5)
+  (setq corfu-auto nil))
 (add-hook 'text-mode-hook 'my-writing-hook)
 
 (use-package org-modern
@@ -479,7 +481,8 @@
 ;;Discord prescence
 (use-package elcord
   :config
-  (elcord-mode))
+  (elcord-mode)
+  (setq elcord-idle-message "probably dead tbh"))
 
 ;; Git Gutter Stuff
 (use-package git-gutter
@@ -609,6 +612,8 @@
 
 (use-package yaml-mode)
 
+(use-package markdown-mode) ;; needed for eldoc rendering
+
 (use-package haskell-mode)
 
 (use-package sly)
@@ -659,8 +664,8 @@
 
 (use-package eldoc-box
   :config
-  ;; (setq eldoc-box-hover-mode 1)
-  (setq eldoc-box-hover-at-point-mode 1))
+  (setq eldoc-box-hover-mode 1))
+  ;; (setq eldoc-box-hover-at-point-mode 1))
 
 ;; Prog mode hooks
 (defun my-prog-hook ()
@@ -669,7 +674,10 @@
   (hl-todo-mode 1)
   (eldoc-box-hover-at-point-mode 1)
   (subword-mode 1)
-  (c-set-offset 'case-label '+))
+  (c-set-offset 'case-label '+)
+  (setq-local corfu-auto-delay 0)
+  (eldoc-box-hover-mode)
+  (setq eldoc-idle-delay 0.0))
 (add-hook 'prog-mode-hook 'my-prog-hook)
 
 (defun my-java-hook ()
@@ -695,6 +703,7 @@
   "My hook for C and C++ programming."
   (setq tab-width 2)
   (c-set-style "k&r")
+  (setq c-basic-offset 2)
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
 (add-hook 'c-mode-hook 'my-c-hook)
 
@@ -715,7 +724,7 @@
  '(org-agenda-files
    '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(journalctl-mode rg stumpwm-mode consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
