@@ -242,11 +242,28 @@
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block))
 
-(use-package yasnippet-capf
-  :after (cape)
-  :config
-  (add-to-list 'completion-at-point-functions #'yasnippet-capf))
+;; (use-package yasnippet-capf
+;;   :after (cape)
+;;   :config
+;;   (add-to-list 'completion-at-point-functions #'yasnippet-capf))
 
+;;;;;;;;;;;;;;;;;;;;;
+;; Project Configs ;;
+;;;;;;;;;;;;;;;;;;;;;
+
+;; Projectile ;;
+(when *using-projectile*
+  (use-package projectile
+    :init
+    (projectile-mode +1)
+    :bind (:map projectile-mode-map
+		("C-c p" . projectile-command-map))
+    :config
+    (setq projectile-sort-order 'recentf)
+    (setq projectile-indexing-method 'hybrid)
+    (setq projectile-completion-system 'default)
+    (setq projectile-mode-line-prefix " ")
+    (projectile-mode +1)))
 
 ;;;;;;;;;;;;;;;;;;;;
 ;; Vertico Config ;;
@@ -447,25 +464,6 @@
       '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
         "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-
-;---------------------------------------------------------
-;;;;;;;;;;;;;;;;;;;;;
-;; Project Configs ;;
-;;;;;;;;;;;;;;;;;;;;;
-
-;; Projectile ;;
-(when *using-projectile*
-  (use-package projectile
-    :init
-    (projectile-mode +1)
-    :bind (:map projectile-mode-map
-		("C-c p" . projectile-command-map))
-    :config
-    (setq projectile-sort-order 'recentf)
-    (setq projectile-indexing-method 'hybrid)
-    (setq projectile-completion-system 'default)
-    (setq projectile-mode-line-prefix " ")
-    (projectile-mode +1)))
 
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -724,7 +722,7 @@
  '(org-agenda-files
    '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
