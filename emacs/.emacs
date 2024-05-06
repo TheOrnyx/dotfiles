@@ -206,7 +206,7 @@
     (corfu-auto t)                  ; Enable auto completion
     (corfu-auto-prefix 1)
     (corfu-auto-delay 0.0)
-    (corfu-popupinfo-delay '(0.5 . 0.2))
+    (corfu-popupinfo-delay 0)
     (corfu-preview-current 'insert) ; Do not preview current candidate
     (corfu-preselect 'prompt)
     (corfu-on-exact-match nil)      ; Don't auto expand tempel snippets
@@ -381,9 +381,9 @@
 
   (use-package consult-projectile
     :after (consult projectile)
-    :bind
-    (("C-c p f" . consult-projectile-find-file)
-     ("C-c p p" . consult-projectile-switch-project)))
+    :config
+    (global-set-key [remap projectile-find-file] 'consult-projectile-find-file)
+    (global-set-key [remap projectile-switch-project] 'consult-projectile-switch-project))
 
   (use-package consult-todo)
 
