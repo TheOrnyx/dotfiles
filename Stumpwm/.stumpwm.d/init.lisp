@@ -173,4 +173,5 @@
   ;; (swm-gaps:toggle-gaps)
   (update-color-map (current-screen))
   (init-load-path *module-dir*)
-  (stumpwm:which-key-mode))
+  (stumpwm:which-key-mode)
+  (stumpwm:run-shell-command "sh $HOME/.fehbg"))
