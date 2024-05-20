@@ -53,6 +53,17 @@
 (defvar *using-projectile* t)
 (defvar *using-project.el* nil)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Functions for stuff ;;
+;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun prompt-for-eglot ()
+  "Prompt the user for activating eglot."
+  (interactive)
+  (unless (eglot-current-server)
+    (when (y-or-n-p "Enable eglot?")
+      (eglot-ensure))))
+
 ;---------------------------------------------------------
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -89,6 +100,10 @@
 (global-set-key (kbd "C-M-z") 'zap-to-char)
 (global-set-key (kbd "M-Z") 'zap-to-char)
 (global-set-key (kbd "M-i") 'imenu)				;;Binding for imenu
+
+;; lisp kinda stuff (sexy expressions 🤪)
+(global-set-key (kbd "M-<right>") 'paredit-forward-slurp-sexp)
+(global-set-key (kbd "M-<left>") 'paredit-backward-slurp-sexp)
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
@@ -220,7 +235,10 @@
     (corfu-popupinfo-mode) ; Popup completion info
     :config
     (setq corfu-sources
-	  '(corfu-source-company-capf))))
+	  '(corfu-source-company-capf))
+    :bind
+    (:map corfu-map
+	  ("TAB" . nil))))
 
 (use-package kind-icon
   :after corfu
@@ -235,7 +253,7 @@
 ;; Cape ;;
 (use-package cape
   :after corfu
-  :defer 10
+  ;; :defer 10
   :bind ("C-c f" . cape-file)
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
@@ -424,13 +442,14 @@
   (setq org-indent-mode 1))
 (add-hook 'org-mode-hook 'my-org-hook)
 
+;; TODO - change this to add like spelling to corfu and tweak some of the settings
 (defun my-writing-hook ()
   "My hook for writing modes (mostly org mode)"
   (setq fill-column 80)
   (auto-fill-mode 1)
-  (flyspell-mode 1)
-  (setq-local corfu-auto-delay 0.5)
-  (setq corfu-auto nil))
+  (flyspell-mode 1))
+  ;; (setq corfu-auto-delay 0.5))
+  ;; (setq corfu-auto nil))
 (add-hook 'text-mode-hook 'my-writing-hook)
 
 (use-package org-modern
@@ -503,8 +522,6 @@
                      (nil font-lock-variable-name-face))))
   (add-hook 'after-init-hook 'global-color-identifiers-mode))
 
-(use-package format-all)
-
 (use-package ialign
   :config
   (global-set-key (kbd "C-c l") #'ialign))
@@ -532,9 +549,6 @@
 (use-package rainbow-mode
   :custom
   (rainbow-mode 1))
-
-;; (use-package iedit
-;;   :config (global-set-key (kbd "C-:") 'iedit-mode))
 
 (use-package flycheck
   :init
@@ -585,6 +599,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
+
+
 
 ;; OCAML modes
 (use-package tuareg)
@@ -645,7 +661,7 @@
   (add-hook 'java-mode-hook 'eglot-java-mode)
   (add-hook 'java-mode-hook (lambda ()
 			      (setq eglot-report-progress nil)))
-  (add-hook 'c++-mode-hook 'eglot-ensure)
+  (add-hook 'c++-mode-hook 'prompt-for-eglot)
   (add-hook 'processing-mode 'eglot-ensure))
 
 ;;;Clojure
@@ -673,7 +689,8 @@
   (eldoc-box-hover-at-point-mode 1)
   (subword-mode 1)
   (c-set-offset 'case-label '+)
-  (setq-local corfu-auto-delay 0)
+  (setq corfu-auto-delay 0)
+  (setq corfu-auto t)
   (eldoc-box-hover-mode)
   (setq eldoc-idle-delay 0.0))
 (add-hook 'prog-mode-hook 'my-prog-hook)
@@ -692,7 +709,7 @@
 (add-hook 'go-mode-hook 'my-go-hook)
 
 (defun set-go-wasm-env ()
-  "Set the environment variables GOOS and GOARCH to properly program with JS and WASM"
+  "Set the environment variables GOOS and GOARCH to properly program with JS and WASM."
   (interactive)
   (setenv "GOOS" "js")
   (setenv "GOARCH" "wasm"))
@@ -704,6 +721,14 @@
   (setq c-basic-offset 2)
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
 (add-hook 'c-mode-hook 'my-c-hook)
+
+(defun my-asm-mode-hook ()
+  ;; you can use `comment-dwim' (M-;) for this kind of behaviour anyway
+  (local-unset-key (vector asm-comment-char))
+  ;; asm-mode sets it locally to nil, to "stay closer to the old TAB behaviour".
+  (setq tab-always-indent (default-value 'tab-always-indent)))
+
+(add-hook 'asm-mode-hook #'my-asm-mode-hook)
 
 ;---------------------------------------------------------
 
@@ -722,7 +747,7 @@
  '(org-agenda-files
    '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck magit maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-roam org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.

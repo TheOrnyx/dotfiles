@@ -55,7 +55,6 @@
   (setq use-package-always-ensure t
         use-package-expand-minimally t))
 (require 'use-package)
-
 (provide 'early-init)
 
 ;;; early-init.el ends here
