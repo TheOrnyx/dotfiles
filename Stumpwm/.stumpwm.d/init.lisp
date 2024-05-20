@@ -118,13 +118,9 @@
 
 ;; functions for floating and toggle always on top to prevent glitchiness
 (defcommand float-raise-this () ()
-  (float-this)
-  (toggle-always-on-top))
-
+  (float-this))
 (defcommand unfloat-raise-this () ()
-  (unfloat-this)
-  (toggle-always-on-top))
-
+  (unfloat-this))
 ;; Use alacritty instead of xterm
 (define-key *root-map* (kbd "c") "exec alacritty")
 (define-key *root-map* (kbd "C-c") "exec alacritty")
