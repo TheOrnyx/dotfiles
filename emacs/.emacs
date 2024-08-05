@@ -196,6 +196,11 @@
 (scroll-bar-mode -1)
 (global-display-line-numbers-mode 1)
 
+;; Smerge stuff
+(eval-after-load 'smerge-mode
+  (lambda () 
+    (setq smerge-command-prefix (kbd "C-c C-s"))))
+
 ;---------------------------------------------------------
 
 ;;;;;;;;;;;;;;;;;;;;;;;;
@@ -204,6 +209,18 @@
 
 ;; Magit
 (use-package magit)
+
+;; Forge
+(use-package forge
+  :after magit
+  :config
+  (setq forge-alist '(("github.com" "api.github.com" "github.com" forge-github-repository)
+		      ("gitlab.com" "gitlab.com/api/v4" "gitlab.com" forge-gitlab-repository)
+		      ("gitlab.ecs.vuw.ac.nz" "gitlab.ecs.vuw.ac.nz/api/v4" "gitlab.ecs.vuw.ac.nz" forge-gitlab-repository))))
+
+;; Ediff configuration
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
 
 ;; Ripgrep
 (use-package rg)
@@ -439,18 +456,20 @@
 
 (defun my-org-hook ()
   "My hook for org mode stuff"
-  (setq org-indent-mode 1))
+  (setq org-indent-mode 1)
+  (setq fill-column 100)
+  (auto-fill-mode 1))
 (add-hook 'org-mode-hook 'my-org-hook)
 
 ;; TODO - change this to add like spelling to corfu and tweak some of the settings
 (defun my-writing-hook ()
   "My hook for writing modes (mostly org mode)"
-  (setq fill-column 80)
-  (auto-fill-mode 1)
   (flyspell-mode 1))
   ;; (setq corfu-auto-delay 0.5))
   ;; (setq corfu-auto nil))
 (add-hook 'text-mode-hook 'my-writing-hook)
+
+
 
 (use-package org-modern
   :config
@@ -690,7 +709,13 @@
 (use-package eldoc-box
   :config
   (setq eldoc-box-hover-mode 1))
-  ;; (setq eldoc-box-hover-at-point-mode 1))
+;; (setq eldoc-box-hover-at-point-mode 1))
+
+;; GODOT stuff
+(use-package gdscript-mode
+  :hook (gdscript-mode . prompt-for-eglot)
+  :config
+  (setq gdscript-godot-executable "/usr/bin/godot"))
 
 ;; Prog mode hooks
 (defun my-prog-hook ()
@@ -699,11 +724,7 @@
   (hl-todo-mode 1)
   (eldoc-box-hover-at-point-mode 1)
   (subword-mode 1)
-  (c-set-offset 'case-label '+)
-  (setq corfu-auto-delay 0)
-  (setq corfu-auto t)
-  (eldoc-box-hover-mode)
-  (setq eldoc-idle-delay 0.0))
+  (c-set-offset 'case-label '+))
 (add-hook 'prog-mode-hook 'my-prog-hook)
 
 (defun my-java-hook ()
@@ -759,7 +780,7 @@
  '(org-agenda-files
    '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(smerge ac-ispell poker blackjack gdscript-mode impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
