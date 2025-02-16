@@ -110,10 +110,10 @@
 (global-set-key (kbd "C-c a") 'org-agenda)
 
 (add-hook 'dired-mode-hook
-		  (lambda ()
-			(local-set-key (kbd "<return>") 'dired-find-alternate-file)  ;; Single buffer for opening dired buffers
-			(define-key dired-mode-map (kbd "^")
-						(lambda () (interactive) (find-alternate-file ".."))))) ;; single buffer for going up
+	  (lambda ()
+	    (local-set-key (kbd "<return>") 'dired-find-alternate-file)  ;; Single buffer for opening dired buffers
+	    (define-key dired-mode-map (kbd "^")
+			(lambda () (interactive) (find-alternate-file ".."))))) ;; single buffer for going up
 
 ;; Stop the stupid suspend-emacs bind
 (global-set-key (kbd "C-z") (lambda () (interactive)
@@ -330,11 +330,7 @@
   
   (use-package savehist
     :init (savehist-mode))
-  
-  (use-package all-the-icons-completion
-    :after (marginalia all-the-icons)
-    :hook (marginalia-mode . all-the-icons-completion-marginalia-setup)
-    :init (all-the-icons-completion-mode))
+
   
   (use-package orderless
     :custom
@@ -470,8 +466,8 @@
 (defun my-writing-hook ()
   "My hook for writing modes (mostly org mode)"
   (flyspell-mode 1))
-  ;; (setq corfu-auto-delay 0.5))
-  ;; (setq corfu-auto nil))
+;; (setq corfu-auto-delay 0.5))
+;; (setq corfu-auto nil))
 (add-hook 'text-mode-hook 'my-writing-hook)
 
 
@@ -512,6 +508,15 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extra Misc Packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Icons
+(use-package nerd-icons)
+
+(use-package nerd-icons-completion
+  :after marginalia
+  :config
+  (nerd-icons-completion-mode)
+  (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
 ;;TOML
 (use-package toml-mode)
@@ -561,8 +566,6 @@
   (which-key-setup-side-window-bottom)
   (setq which-key-idle-delay 0.1))
 
-(use-package all-the-icons
-  :if (display-graphic-p))
 
 (use-package devdocs
   :config (global-set-key (kbd "C-h z") 'devdocs-lookup))
@@ -616,8 +619,6 @@
 
 (use-package dired-filter)
 (setq dired-dwim-target t)
-(use-package all-the-icons-dired
-  :hook (dired-mode . all-the-icons-dired-mode))
 
 ;---------------------------------------------------------
 ;;;;;;;;;;;;;;;;;;;;;;;
@@ -690,7 +691,7 @@
 	       '(processing-mode . ("~/processing-4.3/processing-lsp" "--stdio"))))
 
 
-(when *using-eglot*
+(when *using-eglot*  
   (use-package eglot-java)
   (add-hook 'java-mode-hook 'eglot-java-mode)
   (add-hook 'java-mode-hook (lambda ()
@@ -716,10 +717,6 @@
 (use-package hl-todo)
 (use-package flycheck-hl-todo
   :after (hl-todo))
-
-(use-package eldoc-box
-  :config)
-;; (setq eldoc-box-hover-at-point-mode 1))
 
 ;; GODOT stuff
 (use-package gdscript-mode
@@ -789,7 +786,7 @@
  '(org-agenda-files
    '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(zig-mode engrave-faces mermaid-mode edit-indirect smerge ac-ispell poker blackjack gdscript-mode impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(forge magit nerd-icons-completion vertico zig-mode engrave-faces mermaid-mode edit-indirect smerge ac-ispell poker blackjack gdscript-mode impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult yasnippet-snippets which-key sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
