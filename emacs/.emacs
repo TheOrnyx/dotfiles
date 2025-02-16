@@ -42,7 +42,8 @@
 	(toml "https://github.com/tree-sitter/tree-sitter-toml")
 	(tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
 	(typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-	(yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+	(yaml "https://github.com/ikatyang/tree-sitter-yaml")
+	(gdshader "https://github.com/GodOfAvacyn/tree-sitter-gdshader")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;  Controllers for different sections ;;
@@ -87,6 +88,7 @@
 (setq calendar-week-start-day 1)
 (display-time-mode 1)
 (display-battery-mode 1)
+
 ;---------------------------------------------------------
 
 ;;;;;;;;;;;;;;;;;;;;;
@@ -134,6 +136,8 @@
 (setq ispell-dictionary "en_NZ")
 
 (setq image-use-external-converter 1)
+
+;; Backup stuff
 (setq backup-directory-alist '(("." . "~/.backups/emacs/")))
 (column-number-mode 1)
 
@@ -275,7 +279,8 @@
   :init
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block))
+  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+  (add-to-list 'completion-at-point-functions #'cape-dict))
 
 ;; (use-package yasnippet-capf
 ;;   :after (cape)
@@ -620,6 +625,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;
 
 
+;; Zig <3
+(use-package zig-mode
+  :config
+  (setq zig-format-on-save nil))
 
 ;; OCAML modes
 (use-package tuareg)
@@ -646,6 +655,8 @@
 (use-package yaml-mode)
 
 (use-package markdown-mode) ;; needed for eldoc rendering
+
+(use-package mermaid-mode) ;; Used for markdown mermaid graphs
 
 (use-package haskell-mode)
 
@@ -707,8 +718,7 @@
   :after (hl-todo))
 
 (use-package eldoc-box
-  :config
-  (setq eldoc-box-hover-mode 1))
+  :config)
 ;; (setq eldoc-box-hover-at-point-mode 1))
 
 ;; GODOT stuff
@@ -722,7 +732,6 @@
   "Custom settings for prog modes"
   (interactive)
   (hl-todo-mode 1)
-  (eldoc-box-hover-at-point-mode 1)
   (subword-mode 1)
   (c-set-offset 'case-label '+))
 (add-hook 'prog-mode-hook 'my-prog-hook)
@@ -732,7 +741,8 @@
   (interactive)
   (setq indent-tabs-mode nil
 	tab-width 4
-	c-basic-offset 4))
+	c-basic-offset 4)
+  (c-set-offset 'inexpr-class 0))
 (add-hook 'java-mode-hook 'my-java-hook)
 
 (defun my-go-hook ()
@@ -775,12 +785,11 @@
    '("603a831e0f2e466480cdc633ba37a0b1ae3c3e9a4e90183833bc4def3421a961" "8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
  '(elcord-quiet t)
  '(elcord-use-major-mode-as-main-icon t)
- '(eldoc-echo-area-use-multiline-p t)
  '(isearch-lazy-count t)
  '(org-agenda-files
    '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(smerge ac-ispell poker blackjack gdscript-mode impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
+   '(zig-mode engrave-faces mermaid-mode edit-indirect smerge ac-ispell poker blackjack gdscript-mode impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eldoc-box eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult all-the-icons-completion yasnippet-snippets which-key vertico sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all forge flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
