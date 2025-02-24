@@ -625,6 +625,16 @@
 ;; Programming Modes ;;
 ;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Forth
+(use-package forth-mode)
+
+;; Rust
+(use-package rust-mode)
+
+;; Arm assembly mode (has to be cloned from git@github.com:charJe/arm-mode.git)
+(add-to-list 'load-path "~/.emacs.d/elpa/arm-mode")
+(require 'arm-mode)
+
 
 ;; Zig <3
 (use-package zig-mode
@@ -769,6 +779,10 @@
 
 (add-hook 'asm-mode-hook #'my-asm-mode-hook)
 
+(defun my-rust-mode-hook ()
+  (setq indent-tabs-mode nil))
+(add-hook 'rust-mode-hook #'my-rust-mode-hook)
+
 ;---------------------------------------------------------
 
 (custom-set-variables
@@ -786,7 +800,7 @@
  '(org-agenda-files
    '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(forge magit nerd-icons-completion vertico zig-mode engrave-faces mermaid-mode edit-indirect smerge ac-ispell poker blackjack gdscript-mode impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult yasnippet-snippets which-key sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon)))
+   '(forth-mode rust-mode forge magit nerd-icons-completion vertico zig-mode engrave-faces mermaid-mode edit-indirect smerge ac-ispell poker blackjack gdscript-mode impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult yasnippet-snippets which-key sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
