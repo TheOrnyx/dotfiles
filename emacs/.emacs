@@ -109,12 +109,6 @@
 
 (global-set-key (kbd "C-c a") 'org-agenda)
 
-(add-hook 'dired-mode-hook
-	  (lambda ()
-	    (local-set-key (kbd "<return>") 'dired-find-alternate-file)  ;; Single buffer for opening dired buffers
-	    (define-key dired-mode-map (kbd "^")
-			(lambda () (interactive) (find-alternate-file ".."))))) ;; single buffer for going up
-
 ;; Stop the stupid suspend-emacs bind
 (global-set-key (kbd "C-z") (lambda () (interactive)
 			      (message-box "Good one dumbass, if I hadn't fixed this it would've suspended the frame clown")))
@@ -129,6 +123,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Extra Code And Configurations ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; TODO - maybe write a like "jump to next instance of character" function
 
 (setq doc-view-resolution 100) ;; better pdf resolution
 
@@ -509,6 +505,11 @@
 ;; Extra Misc Packages ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;
 
+;; Elfeed - RSS reader :3
+(use-package elfeed
+  :config
+  (setq elfeed-search-filter "@6-months-ago"))
+
 ;; Icons
 (use-package nerd-icons)
 
@@ -703,9 +704,12 @@
 
 (when *using-eglot*  
   (use-package eglot-java)
-  (add-hook 'java-mode-hook 'eglot-java-mode)
+  ;; (add-hook 'java-mode-hook 'eglot-java-mode)
   (add-hook 'java-mode-hook (lambda ()
-			      (setq eglot-report-progress nil)))
+			      (setq eglot-report-progress nil)
+			      (unless (eglot-current-server)
+				(when (y-or-n-p "Enable eglot?")
+				  (eglot-java-mode)))))
   (add-hook 'c++-mode-hook 'prompt-for-eglot)
   (add-hook 'processing-mode 'eglot-ensure)
 
@@ -719,9 +723,9 @@
 ;;;Clojure
 (use-package cider)
 (when *using-eglot*
-  (add-hook 'clojure-mode-hook 'eglot-ensure))
+  (add-hook 'clojure-mode-hook 'prompt-for-eglot))
 (use-package paredit)
-(add-hook 'clojure-mode-hook 'paredit-mode-hook)
+
 
 ;;Generic programming packages 
 (use-package hl-todo)
@@ -739,8 +743,8 @@
   "Custom settings for prog modes"
   (interactive)
   (hl-todo-mode 1)
-  (subword-mode 1)
-  (c-set-offset 'case-label '+))
+  (subword-mode 1))
+  ;; (c-set-offset 'case-label '+))
 (add-hook 'prog-mode-hook 'my-prog-hook)
 
 (defun my-java-hook ()
@@ -764,12 +768,17 @@
   (setenv "GOARCH" "wasm"))
 
 (defun my-c-hook ()
-  "My hook for C and C++ programming."
-  (setq tab-width 2)
-  (c-set-style "k&r")
-  (setq c-basic-offset 2)
+  "My hook for C programming."
+  ;; (setq tab-width 4)
+  ;; (c-set-style "stroustrup")
+  ;; (setq c-basic-offset 4)
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
 (add-hook 'c-mode-hook 'my-c-hook)
+
+(defun my-cpp-hook ()
+  "My hook for Cpp programming."
+  (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
+(add-hook 'c++-mode-hook 'my-cpp-hook)
 
 (defun my-asm-mode-hook ()
   ;; you can use `comment-dwim' (M-;) for this kind of behaviour anyway
@@ -791,27 +800,66 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(Man-notify-method 'pushy)
+ '(column-number-mode t)
  '(custom-enabled-themes '(dracula))
  '(custom-safe-themes
-   '("603a831e0f2e466480cdc633ba37a0b1ae3c3e9a4e90183833bc4def3421a961" "8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd" default))
+   '("603a831e0f2e466480cdc633ba37a0b1ae3c3e9a4e90183833bc4def3421a961"
+     "8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd"
+     default))
+ '(display-battery-mode t)
+ '(display-time-mode t)
  '(elcord-quiet t)
  '(elcord-use-major-mode-as-main-icon t)
+ '(elfeed-feeds
+   '("https://ziglang.org/devlog/index.xml"
+     "https://normalsville.the-comic.org/rss"))
+ '(global-display-line-numbers-mode t)
  '(isearch-lazy-count t)
  '(org-agenda-files
-   '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org" "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
+   '("/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/todo.org"
+     "/home/Ornyx/.dotfiles/emacs/.emacs.d/agenda/assignments.org"))
  '(package-selected-packages
-   '(forth-mode rust-mode forge magit nerd-icons-completion vertico zig-mode engrave-faces mermaid-mode edit-indirect smerge ac-ispell poker blackjack gdscript-mode impatient-mode emmet-mode go-impl eat iedit cowsay fancy-compilation org-ref javadoc-lookup highlight-indent-guides insert-random cloc markdown-mode intel-hex-mode highlight journalctl-mode rg stumpwm-mode consult-flycheck maven-test-mode highlight-doxygen utop tuareg consult-projectile groovy-mode gradle-mode consult-flyspell centered-window landmark eglot dape auto-complete-auctex org-contrib ox-extra go-imenu consult-todo glsl-mode go-mode info-colors gnuplot-mode gnuplot form-feed julia-snail julia-mode ggtags catppuccin-theme sudo-edit yaml-mode haskell-mode corfu-terminal sly ox-hugo toml-mode auctex ess web-mode elcord flycheck-hl-todo hl-todo yasnippet-capf notmuch flymake-ruby bundler robe csv-mode plantuml-mode disk-usage consult-eglot rainbow-identifiers kind-icon embark-consult yasnippet-snippets which-key sr-speedbar smartparens rainbow-mode rainbow-delimiters quickrun projectile processing-mode paredit org-view-mode org-modern org-download orderless marginalia ialign helpful git-gutter-fringe format-all flycheck embark eglot-java dracula-theme doom-modeline dirvish dired-filter devdocs dashboard ctrlf corfu consult color-identifiers-mode cider beacon)))
+   '(ac-ispell auctex auto-complete-auctex beacon blackjack bundler
+	       catppuccin-theme centered-window cider cloc cmake-mode
+	       color-identifiers-mode compiler-explorer consult
+	       consult-eglot consult-flycheck consult-flyspell
+	       consult-projectile consult-todo corfu corfu-terminal
+	       cowsay csv-mode ctrlf dape dashboard devdocs
+	       dired-filter dirvish disk-usage doom-modeline
+	       dracula-theme dts-mode eat edit-indirect eglot
+	       eglot-java elcord eldoc-cmake elfeed embark
+	       embark-consult emmet-mode engrave-faces ess
+	       fancy-compilation flycheck flycheck-hl-todo
+	       flymake-ruby forge form-feed format-all forth-mode
+	       gdscript-mode ggtags git-gutter-fringe glsl-mode
+	       gnuplot gnuplot-mode go-imenu go-impl go-mode
+	       gradle-mode groovy-mode haskell-mode helpful highlight
+	       highlight-doxygen highlight-indent-guides hl-todo
+	       ialign iedit impatient-mode info-colors insert-random
+	       intel-hex-mode javadoc-lookup journalctl-mode
+	       julia-mode julia-snail kind-icon landmark magit
+	       marginalia markdown-mode maven-test-mode mermaid-mode
+	       nerd-icons-completion notmuch olivetti orderless
+	       org-contrib org-download org-modern org-ref
+	       org-view-mode ox-extra ox-hugo paredit plantuml-mode
+	       poker processing-mode projectile quickrun
+	       rainbow-delimiters rainbow-identifiers rainbow-mode rg
+	       robe rust-mode sly smartparens smerge sr-speedbar
+	       stumpwm-mode sudo-edit toml-mode tuareg utop vertico
+	       web-mode which-key yaml-mode yasnippet-capf
+	       yasnippet-snippets zig-mode))
+ '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:family "Source Code Pro" :foundry "ADBO" :slant normal :weight regular :height 113 :width normal))))
  '(corfu-border ((t (:background "gray33"))))
  '(corfu-default ((t nil)))
  '(eldoc-box-body ((t (:background "#282a36")))))
 
 ;;; .emacs ends here
-(put 'dired-find-alternate-file 'disabled nil)
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
 (require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
