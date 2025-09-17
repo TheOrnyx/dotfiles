@@ -519,6 +519,11 @@
   (nerd-icons-completion-mode)
   (add-hook 'marginalia-mode-hook #'nerd-icons-completion-marginalia-setup))
 
+(use-package nerd-icons-dired
+  :after nerd-icons
+  :hook
+  (dired-mode . nerd-icons-dired-mode))
+
 ;;TOML
 (use-package toml-mode)
 
@@ -549,6 +554,10 @@
   (add-to-list
    'color-identifiers:modes-alist
    `(java-ts-mode . ("" "\\_<\\([a-zA-Z_$]\\(?:\\s_\\|\\sw\\)*\\)"
+                     (nil font-lock-variable-name-face))))
+  (add-to-list
+   'color-identifiers:modes-alist
+   `(glsl-mode . ("" "\\_<\\([a-zA-Z_$]\\(?:\\s_\\|\\sw\\)*\\)"
                      (nil font-lock-variable-name-face))))
   (add-hook 'after-init-hook 'global-color-identifiers-mode))
 
@@ -651,7 +660,7 @@
 
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-	       '(glsl-mode . ("glslls" "--stdin"))))
+	       '(glsl-mode . ("glsl_analyzer"))))
 
 ;; DAPE MODE
 ;; TO FIX JAVA SEE HERE https://github.com/svaante/dape/issues/78#issuecomment-1966786597
@@ -777,8 +786,14 @@
 
 (defun my-cpp-hook ()
   "My hook for Cpp programming."
+  (setq tab-width 4)
+  (setq c-basic-offset 4)
+  (c-set-style "stroustrup")
   (setq eglot-ignored-server-capabilities '(:documentOnTypeFormattingProvider)))
 (add-hook 'c++-mode-hook 'my-cpp-hook)
+
+(with-eval-after-load 'glsl-mode
+  (add-hook 'glsl-mode-hook 'my-cpp-hook))
 
 (defun my-asm-mode-hook ()
   ;; you can use `comment-dwim' (M-;) for this kind of behaviour anyway
@@ -811,7 +826,7 @@
  '(elcord-quiet t)
  '(elcord-use-major-mode-as-main-icon t)
  '(elfeed-feeds
-   '("https://ziglang.org/devlog/index.xml"
+   '("https://jcgt.org/feed.xml" "https://ziglang.org/devlog/index.xml"
      "https://normalsville.the-comic.org/rss"))
  '(global-display-line-numbers-mode t)
  '(isearch-lazy-count t)
@@ -827,7 +842,7 @@
 	       cowsay csv-mode ctrlf dape dashboard devdocs
 	       dired-filter dirvish disk-usage doom-modeline
 	       dracula-theme dts-mode eat edit-indirect eglot
-	       eglot-java elcord eldoc-cmake elfeed embark
+	       eglot-java elcord eldoc-box eldoc-cmake elfeed embark
 	       embark-consult emmet-mode engrave-faces ess
 	       fancy-compilation flycheck flycheck-hl-todo
 	       flymake-ruby forge form-feed format-all forth-mode
@@ -839,8 +854,8 @@
 	       intel-hex-mode javadoc-lookup journalctl-mode
 	       julia-mode julia-snail kind-icon landmark magit
 	       marginalia markdown-mode maven-test-mode mermaid-mode
-	       nerd-icons-completion notmuch olivetti orderless
-	       org-contrib org-download org-modern org-ref
+	       nerd-icons-completion nerd-icons-dired notmuch olivetti
+	       orderless org-contrib org-download org-modern org-ref
 	       org-view-mode ox-extra ox-hugo paredit plantuml-mode
 	       poker processing-mode projectile quickrun
 	       rainbow-delimiters rainbow-identifiers rainbow-mode rg
