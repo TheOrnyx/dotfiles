@@ -81,6 +81,7 @@
   )
 
 (use-package dracula-theme)
+(use-package modus-themes)
 
 (setq-default inhibit-startup-screen t)
 (setq inhibit-splash-screen t)
@@ -117,6 +118,11 @@
 (with-eval-after-load 'eglot
   (keymap-set eglot-mode-map "C-c C-e r" 'eglot-rename)
   (keymap-set eglot-mode-map "C-c C-e a" 'eglot-code-actions))
+
+
+;; Adding bind for transpose lines since C-t is used by my window manager
+(global-set-key (kbd "C-c M-t") 'transpose-lines)
+
 
 ;---------------------------------------------------------
 
@@ -687,6 +693,15 @@
 (use-package web-mode
   :config
   (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode)))
+  ;; (add-to-list
+  ;;  'color-identifiers:modes-alist
+  ;;  '(web-mode . ("\\(?:[^.]\\|^\\)[[:space:]]*"
+  ;; 	  "\\_<\\([a-zA-Z_$]\\(?:\\s_\\|\\sw\\)*\\)"
+  ;; 	  (nil font-lock-variable-name-face)))))
+
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+	       '(web-mode . ("typescript-language-server" "--stdio"))))
 
 (use-package emmet-mode)
 
@@ -807,6 +822,8 @@
   (setq indent-tabs-mode nil))
 (add-hook 'rust-mode-hook #'my-rust-mode-hook)
 
+(load-theme 'modus-operandi-tinted t)
+
 ;---------------------------------------------------------
 
 (custom-set-variables
@@ -816,9 +833,10 @@
  ;; If there is more than one, they won't work right.
  '(Man-notify-method 'pushy)
  '(column-number-mode t)
- '(custom-enabled-themes '(dracula))
+ '(custom-enabled-themes '(modus-operandi-tinted))
  '(custom-safe-themes
-   '("603a831e0f2e466480cdc633ba37a0b1ae3c3e9a4e90183833bc4def3421a961"
+   '("dde7fb0b1ed1bb5b61e62bf1a00696cf099a2b290718aee9b377365b3ed992f0"
+     "603a831e0f2e466480cdc633ba37a0b1ae3c3e9a4e90183833bc4def3421a961"
      "8721f7ee8cd0c2e56d23f757b44c39c249a58c60d33194fe546659dabc69eebd"
      default))
  '(display-battery-mode t)
@@ -854,15 +872,15 @@
 	       intel-hex-mode javadoc-lookup journalctl-mode
 	       julia-mode julia-snail kind-icon landmark magit
 	       marginalia markdown-mode maven-test-mode mermaid-mode
-	       nerd-icons-completion nerd-icons-dired notmuch olivetti
-	       orderless org-contrib org-download org-modern org-ref
-	       org-view-mode ox-extra ox-hugo paredit plantuml-mode
-	       poker processing-mode projectile quickrun
-	       rainbow-delimiters rainbow-identifiers rainbow-mode rg
-	       robe rust-mode sly smartparens smerge sr-speedbar
-	       stumpwm-mode sudo-edit toml-mode tuareg utop vertico
-	       web-mode which-key yaml-mode yasnippet-capf
-	       yasnippet-snippets zig-mode))
+	       modus-themes nerd-icons-completion nerd-icons-dired
+	       notmuch olivetti orderless org-contrib org-download
+	       org-modern org-ref org-view-mode ox-extra ox-hugo
+	       paredit plantuml-mode poker processing-mode projectile
+	       quickrun rainbow-delimiters rainbow-identifiers
+	       rainbow-mode rg robe rust-mode skewer-mode sly
+	       smartparens smerge sr-speedbar stumpwm-mode sudo-edit
+	       toml-mode tuareg utop vertico web-mode which-key
+	       yaml-mode yasnippet-capf yasnippet-snippets zig-mode))
  '(tool-bar-mode nil))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
